@@ -7,24 +7,16 @@ import (
 
 	usersv "github.com/insanXYZ/proto/gen/go/user"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
 
 const APP_PORT = ":3124"
 
 type UserServer struct {
-	usersv.UnimplementedUsersServer
+	usersv.UnimplementedUsersServiceServer
 }
 
-func (u *UserServer) Login(_ context.Context, req *usersv.UserLoginRequest) (*usersv.UserLoginResponse, error) {
-	if req.Username == "insan" && req.Password == "insan1601" {
-		return &usersv.UserLoginResponse{
-			Status: "success login",
-		}, nil
-	}
+func (u *UserServer) FindUserByEmail(context.Context, *usersv.FindUserByEmailRequest) (*usersv.FindUserByEmailResponse, error) {
 
-	return nil, status.Error(codes.Unimplemented, "error login")
 }
 
 func main() {

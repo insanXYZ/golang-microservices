@@ -1,18 +1,23 @@
 syntax = "proto3";
 
-package User;
+package user;
 
 option go_package="./user";
 
-message UserLoginRequest {
-    string username = 1;
-    string password = 2 ;
+message UserModel {
+  string id = 1 ;
+  string name = 2 ;
+  string email = 3 ;
 }
 
-message UserLoginResponse {
-    string status = 1 ;
+message FindUserByEmailRequest{
+  string email = 1 ;
 }
 
-service Users {
-    rpc Login(UserLoginRequest) returns (UserLoginResponse) {};
+message FindUserByEmailResponse {
+  UserModel user = 1;
+}
+
+service UsersService {
+  rpc FindUserByEmail(FindUserByEmailRequest) returns (FindUserByEmailResponse){}
 }

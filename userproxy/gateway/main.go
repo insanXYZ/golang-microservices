@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
-	"github.com/insanXYZ/proto/gen/gateway/proto/user"
+	usersv "github.com/insanXYZ/proto/gen/gateway/proto/user"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/grpclog"
@@ -25,7 +25,7 @@ func run() error {
 	// Note: Make sure the gRPC server is running properly and accessible
 	mux := runtime.NewServeMux()
 	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
-	err := user.RegisterUsersHandlerFromEndpoint(ctx, mux, GRPC_ENDPOINT, opts)
+	err := usersv.RegisterUsersServiceHandlerFromEndpoint(ctx, mux, GRPC_ENDPOINT, opts)
 	if err != nil {
 		return err
 	} // Start HTTP server (and proxy calls to gRPC server endpoint)

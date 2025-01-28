@@ -1,0 +1,9 @@
+# this file is not config
+# only for knowing all port on proxy
+AuthProxy:
+  - gateway : 8080
+  - grpc : 8081
+UserProxy:
+  - gateway : 8082
+  - grpc : 8083
+  

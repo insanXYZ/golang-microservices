@@ -6,7 +6,7 @@
   },
   "tags": [
     {
-      "name": "Users"
+      "name": "UsersService"
     }
   ],
   "consumes": [
@@ -16,14 +16,14 @@
     "application/json"
   ],
   "paths": {
-    "/User.Users/Login": {
+    "/user.UsersService/FindUserByEmail": {
       "post": {
-        "operationId": "Users_Login",
+        "operationId": "UsersService_FindUserByEmail",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/UserUserLoginResponse"
+              "$ref": "#/definitions/userFindUserByEmailResponse"
             }
           },
           "default": {
@@ -39,36 +39,17 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/UserUserLoginRequest"
+              "$ref": "#/definitions/userFindUserByEmailRequest"
             }
           }
         ],
         "tags": [
-          "Users"
+          "UsersService"
         ]
       }
     }
   },
   "definitions": {
-    "UserUserLoginRequest": {
-      "type": "object",
-      "properties": {
-        "username": {
-          "type": "string"
-        },
-        "password": {
-          "type": "string"
-        }
-      }
-    },
-    "UserUserLoginResponse": {
-      "type": "object",
-      "properties": {
-        "status": {
-          "type": "string"
-        }
-      }
-    },
     "protobufAny": {
       "type": "object",
       "properties": {
@@ -94,6 +75,36 @@
             "type": "object",
             "$ref": "#/definitions/protobufAny"
           }
+        }
+      }
+    },
+    "userFindUserByEmailRequest": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string"
+        }
+      }
+    },
+    "userFindUserByEmailResponse": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "$ref": "#/definitions/userUserModel"
+        }
+      }
+    },
+    "userUserModel": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
         }
       }
     }

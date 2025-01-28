@@ -19,101 +19,101 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Users_Login_FullMethodName = "/User.Users/Login"
+	UsersService_FindUserByEmail_FullMethodName = "/user.UsersService/FindUserByEmail"
 )
 
-// UsersClient is the client API for Users service.
+// UsersServiceClient is the client API for UsersService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type UsersClient interface {
-	Login(ctx context.Context, in *UserLoginRequest, opts ...grpc.CallOption) (*UserLoginResponse, error)
+type UsersServiceClient interface {
+	FindUserByEmail(ctx context.Context, in *FindUserByEmailRequest, opts ...grpc.CallOption) (*FindUserByEmailResponse, error)
 }
 
-type usersClient struct {
+type usersServiceClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewUsersClient(cc grpc.ClientConnInterface) UsersClient {
-	return &usersClient{cc}
+func NewUsersServiceClient(cc grpc.ClientConnInterface) UsersServiceClient {
+	return &usersServiceClient{cc}
 }
 
-func (c *usersClient) Login(ctx context.Context, in *UserLoginRequest, opts ...grpc.CallOption) (*UserLoginResponse, error) {
+func (c *usersServiceClient) FindUserByEmail(ctx context.Context, in *FindUserByEmailRequest, opts ...grpc.CallOption) (*FindUserByEmailResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(UserLoginResponse)
-	err := c.cc.Invoke(ctx, Users_Login_FullMethodName, in, out, cOpts...)
+	out := new(FindUserByEmailResponse)
+	err := c.cc.Invoke(ctx, UsersService_FindUserByEmail_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// UsersServer is the server API for Users service.
-// All implementations must embed UnimplementedUsersServer
+// UsersServiceServer is the server API for UsersService service.
+// All implementations must embed UnimplementedUsersServiceServer
 // for forward compatibility.
-type UsersServer interface {
-	Login(context.Context, *UserLoginRequest) (*UserLoginResponse, error)
-	mustEmbedUnimplementedUsersServer()
+type UsersServiceServer interface {
+	FindUserByEmail(context.Context, *FindUserByEmailRequest) (*FindUserByEmailResponse, error)
+	mustEmbedUnimplementedUsersServiceServer()
 }
 
-// UnimplementedUsersServer must be embedded to have
+// UnimplementedUsersServiceServer must be embedded to have
 // forward compatible implementations.
 //
 // NOTE: this should be embedded by value instead of pointer to avoid a nil
 // pointer dereference when methods are called.
-type UnimplementedUsersServer struct{}
+type UnimplementedUsersServiceServer struct{}
 
-func (UnimplementedUsersServer) Login(context.Context, *UserLoginRequest) (*UserLoginResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
+func (UnimplementedUsersServiceServer) FindUserByEmail(context.Context, *FindUserByEmailRequest) (*FindUserByEmailResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FindUserByEmail not implemented")
 }
-func (UnimplementedUsersServer) mustEmbedUnimplementedUsersServer() {}
-func (UnimplementedUsersServer) testEmbeddedByValue()               {}
+func (UnimplementedUsersServiceServer) mustEmbedUnimplementedUsersServiceServer() {}
+func (UnimplementedUsersServiceServer) testEmbeddedByValue()                      {}
 
-// UnsafeUsersServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to UsersServer will
+// UnsafeUsersServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to UsersServiceServer will
 // result in compilation errors.
-type UnsafeUsersServer interface {
-	mustEmbedUnimplementedUsersServer()
+type UnsafeUsersServiceServer interface {
+	mustEmbedUnimplementedUsersServiceServer()
 }
 
-func RegisterUsersServer(s grpc.ServiceRegistrar, srv UsersServer) {
-	// If the following call pancis, it indicates UnimplementedUsersServer was
+func RegisterUsersServiceServer(s grpc.ServiceRegistrar, srv UsersServiceServer) {
+	// If the following call pancis, it indicates UnimplementedUsersServiceServer was
 	// embedded by pointer and is nil.  This will cause panics if an
 	// unimplemented method is ever invoked, so we test this at initialization
 	// time to prevent it from happening at runtime later due to I/O.
 	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
 		t.testEmbeddedByValue()
 	}
-	s.RegisterService(&Users_ServiceDesc, srv)
+	s.RegisterService(&UsersService_ServiceDesc, srv)
 }
 
-func _Users_Login_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UserLoginRequest)
+func _UsersService_FindUserByEmail_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FindUserByEmailRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UsersServer).Login(ctx, in)
+		return srv.(UsersServiceServer).FindUserByEmail(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Users_Login_FullMethodName,
+		FullMethod: UsersService_FindUserByEmail_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UsersServer).Login(ctx, req.(*UserLoginRequest))
+		return srv.(UsersServiceServer).FindUserByEmail(ctx, req.(*FindUserByEmailRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// Users_ServiceDesc is the grpc.ServiceDesc for Users service.
+// UsersService_ServiceDesc is the grpc.ServiceDesc for UsersService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var Users_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "User.Users",
-	HandlerType: (*UsersServer)(nil),
+var UsersService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "user.UsersService",
+	HandlerType: (*UsersServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "Login",
-			Handler:    _Users_Login_Handler,
+			MethodName: "FindUserByEmail",
+			Handler:    _UsersService_FindUserByEmail_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
