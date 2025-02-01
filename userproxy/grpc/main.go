@@ -1,37 +1,27 @@
 package main
 
 import (
-	"context"
-	"log"
+	"fmt"
 	"net"
 
 	usersv "github.com/insanXYZ/proto/gen/go/user"
 	"google.golang.org/grpc"
 )
 
-const APP_PORT = ":3124"
-
-type UserServer struct {
-	usersv.UnimplementedUsersServiceServer
-}
-
-func (u *UserServer) FindUserByEmail(context.Context, *usersv.FindUserByEmailRequest) (*usersv.FindUserByEmailResponse, error) {
-
-}
+const APP_PORT = ":8083"
 
 func main() {
-	server := grpc.NewServer()
-	var userServer UserServer
-	usersv.RegisterUsersServer(server, &userServer)
+	grpcServer := grpc.NewServer()
+
+	usersv.RegisterUserServiceServer(grpcServer, NewUserServer())
 
 	listen, err := net.Listen("tcp", APP_PORT)
 	if err != nil {
 		panic(err.Error())
 	}
 
-	log.Printf("grpc userserver listen on port %s", APP_PORT)
-
-	err = server.Serve(listen)
+	fmt.Println("userproxy[GRPC] listen on port " + APP_PORT)
+	err = grpcServer.Serve(listen)
 	if err != nil {
 		panic(err.Error())
 	}

@@ -85,18 +85,20 @@
     "authLoginRequest": {
       "type": "object",
       "properties": {
-        "username": {
-          "type": "string"
+        "email": {
+          "type": "string",
+          "title": "@gotags: validate:\"required,email\""
         },
         "password": {
-          "type": "string"
+          "type": "string",
+          "title": "@gotags: validate:\"required,gt=8\""
         }
       }
     },
     "authLoginResponse": {
       "type": "object",
       "properties": {
-        "status": {
+        "message": {
           "type": "string"
         }
       }
@@ -105,20 +107,23 @@
       "type": "object",
       "properties": {
         "username": {
-          "type": "string"
+          "type": "string",
+          "title": "@gotags: validate:\"required,gt=4\""
         },
         "password": {
-          "type": "string"
+          "type": "string",
+          "title": "@gotags: validate:\"required,gt=8\""
         },
         "email": {
-          "type": "string"
+          "type": "string",
+          "title": "@gotags: validate:\"required,email\""
         }
       }
     },
     "authRegisterResponse": {
       "type": "object",
       "properties": {
-        "status": {
+        "message": {
           "type": "string"
         }
       }

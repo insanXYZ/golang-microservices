@@ -6,7 +6,7 @@
   },
   "tags": [
     {
-      "name": "UsersService"
+      "name": "UserService"
     }
   ],
   "consumes": [
@@ -16,9 +16,9 @@
     "application/json"
   ],
   "paths": {
-    "/user.UsersService/FindUserByEmail": {
+    "/user.UserService/FindUserByEmail": {
       "post": {
-        "operationId": "UsersService_FindUserByEmail",
+        "operationId": "UserService_FindUserByEmail",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -44,7 +44,39 @@
           }
         ],
         "tags": [
-          "UsersService"
+          "UserService"
+        ]
+      }
+    },
+    "/user.UserService/Insert": {
+      "post": {
+        "operationId": "UserService_Insert",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/userInsertResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/userInsertRequest"
+            }
+          }
+        ],
+        "tags": [
+          "UserService"
         ]
       }
     }
@@ -94,6 +126,28 @@
         }
       }
     },
+    "userInsertRequest": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        }
+      }
+    },
+    "userInsertResponse": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
+        }
+      }
+    },
     "userUserModel": {
       "type": "object",
       "properties": {
@@ -104,6 +158,9 @@
           "type": "string"
         },
         "email": {
+          "type": "string"
+        },
+        "password": {
           "type": "string"
         }
       }

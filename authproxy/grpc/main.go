@@ -1,44 +1,33 @@
 package main
 
 import (
-	"context"
-	"log"
+	"auth-service-grpc/dial"
+	"fmt"
 	"net"
 
+	"github.com/go-playground/validator/v10"
 	authsv "github.com/insanXYZ/proto/gen/go/auth"
 	"google.golang.org/grpc"
 )
 
-const PORT = ":8081"
-
-type AuthServer struct {
-	authsv.UnimplementedAuthServiceServer
-}
-
-func (s *AuthServer) Register(context.Context, *authsv.RegisterRequest) (*authsv.RegisterResponse, error) {
-	return &authsv.RegisterResponse{
-		Status: "success to Register rpc service",
-	}, nil
-}
-
-func (s *AuthServer) Login(context.Context, *authsv.LoginRequest) (*authsv.LoginResponse, error) {
-	return &authsv.LoginResponse{
-		Status: "success to Login rpc service",
-	}, nil
-}
+const (
+	APP_PORT = ":8081"
+)
 
 func main() {
-	server := grpc.NewServer()
-	authsv.RegisterAuthServiceServer(server, &AuthServer{})
+	grpcServer := grpc.NewServer()
 
-	listen, err := net.Listen("tcp", PORT)
+	initServer := NewAuthServer(dial.NewUserServiceClient(), validator.New())
+
+	authsv.RegisterAuthServiceServer(grpcServer, initServer)
+
+	listen, err := net.Listen("tcp", APP_PORT)
 	if err != nil {
 		panic(err.Error())
 	}
 
-	log.Printf("AuthService[GRPC] Run on port %s", PORT)
-
-	err = server.Serve(listen)
+	fmt.Println("authproxy[GRPC] listen on port " + APP_PORT)
+	err = grpcServer.Serve(listen)
 	if err != nil {
 		panic(err.Error())
 	}
