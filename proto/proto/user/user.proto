@@ -6,13 +6,13 @@ option go_package="./user";
 
 message UserModel {
   string id = 1 ;
-  string name = 2 ;
+  string username = 2 ;
   string email = 3 ;
   string password = 4 ;
 }
 
 message FindUserByEmailRequest {
-  string email =1;
+  string email =1; // @gotags: validate:"required,email" 
 }
 
 message FindUserByEmailResponse {
@@ -20,9 +20,9 @@ message FindUserByEmailResponse {
 }
 
 message InsertRequest {
-  string username =  1;
-  string password = 2;
-  string email = 3;
+  string username =  1; // @gotags: validate:"required,gt=4" 
+  string password = 2; // @gotags: validate:"required,gt=8" 
+  string email = 3; // @gotags: validate:"required,email" 
 }
 
 message InsertResponse {

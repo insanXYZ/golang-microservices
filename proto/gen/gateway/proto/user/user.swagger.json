@@ -114,7 +114,8 @@
       "type": "object",
       "properties": {
         "email": {
-          "type": "string"
+          "type": "string",
+          "title": "@gotags: validate:\"required,email\""
         }
       }
     },
@@ -130,13 +131,16 @@
       "type": "object",
       "properties": {
         "username": {
-          "type": "string"
+          "type": "string",
+          "title": "@gotags: validate:\"required,gt=4\""
         },
         "password": {
-          "type": "string"
+          "type": "string",
+          "title": "@gotags: validate:\"required,gt=8\""
         },
         "email": {
-          "type": "string"
+          "type": "string",
+          "title": "@gotags: validate:\"required,email\""
         }
       }
     },
@@ -154,7 +158,7 @@
         "id": {
           "type": "string"
         },
-        "name": {
+        "username": {
           "type": "string"
         },
         "email": {

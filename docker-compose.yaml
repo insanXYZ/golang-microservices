@@ -23,18 +23,26 @@ services:
   #   image: "user_gateway:1.0.0"
   #   ports:
   #     - "8082"
-  # user_grpc:
-  #   container_name: user_grpc
-  #   build:
-  #     context: "./userproxy/grpc"
-  #     dockerfile: Dockerfile
-  #   image: "user_grpc:1.0.0"
-  #   ports:
-  #     - "8083"
-  proxy:
-    container_name: proxy
-    volumes:
-      - ./nginx.conf:/etc/nginx/conf.d
-    image: nginx:latest
+  user_grpc:
+    container_name: user_grpc
+    build:
+      context: .
+      dockerfile: "./userproxy/grpc/Dockerfile"
+    # image: "user_grpc:1.0.0"
     ports:
-      - "8080:80"
+      - "8083:8083"
+    depends_on:
+    - db_user
+  db_user:
+    container_name: db_user
+    image: postgres:latest
+    ports:
+      - "5432"
+    environment:
+      POSTGRES_DB: user_service
+      POSTGRES_PASSWORD: 12345678
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
