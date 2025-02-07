@@ -16,6 +16,7 @@ import (
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/utilities"
+	userpb "github.com/insanXYZ/proto/gen/go/user"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/grpclog"
@@ -35,9 +36,9 @@ var (
 	_ = metadata.Join
 )
 
-func request_UserService_Insert_0(ctx context.Context, marshaler runtime.Marshaler, client UserServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_UserService_Insert_0(ctx context.Context, marshaler runtime.Marshaler, client userpb.UserServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
-		protoReq InsertRequest
+		protoReq userpb.InsertRequest
 		metadata runtime.ServerMetadata
 	)
 	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
@@ -47,9 +48,9 @@ func request_UserService_Insert_0(ctx context.Context, marshaler runtime.Marshal
 	return msg, metadata, err
 }
 
-func local_request_UserService_Insert_0(ctx context.Context, marshaler runtime.Marshaler, server UserServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_UserService_Insert_0(ctx context.Context, marshaler runtime.Marshaler, server userpb.UserServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
-		protoReq InsertRequest
+		protoReq userpb.InsertRequest
 		metadata runtime.ServerMetadata
 	)
 	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
@@ -59,9 +60,9 @@ func local_request_UserService_Insert_0(ctx context.Context, marshaler runtime.M
 	return msg, metadata, err
 }
 
-func request_UserService_FindUserByEmail_0(ctx context.Context, marshaler runtime.Marshaler, client UserServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_UserService_FindUserByEmail_0(ctx context.Context, marshaler runtime.Marshaler, client userpb.UserServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
-		protoReq FindUserByEmailRequest
+		protoReq userpb.FindUserByEmailRequest
 		metadata runtime.ServerMetadata
 	)
 	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
@@ -71,9 +72,9 @@ func request_UserService_FindUserByEmail_0(ctx context.Context, marshaler runtim
 	return msg, metadata, err
 }
 
-func local_request_UserService_FindUserByEmail_0(ctx context.Context, marshaler runtime.Marshaler, server UserServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_UserService_FindUserByEmail_0(ctx context.Context, marshaler runtime.Marshaler, server userpb.UserServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
-		protoReq FindUserByEmailRequest
+		protoReq userpb.FindUserByEmailRequest
 		metadata runtime.ServerMetadata
 	)
 	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
@@ -84,11 +85,11 @@ func local_request_UserService_FindUserByEmail_0(ctx context.Context, marshaler 
 }
 
 // RegisterUserServiceHandlerServer registers the http handlers for service UserService to "mux".
-// UnaryRPC     :call UserServiceServer directly.
+// UnaryRPC     :call userpb.UserServiceServer directly.
 // StreamingRPC :currently unsupported pending https://github.com/grpc/grpc-go/issues/906.
 // Note that using this registration option will cause many gRPC library features to stop working. Consider using RegisterUserServiceHandlerFromEndpoint instead.
 // GRPC interceptors will not work for this type of registration. To use interceptors, you must use the "runtime.WithMiddlewares" option in the "runtime.NewServeMux" call.
-func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux, server UserServiceServer) error {
+func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux, server userpb.UserServiceServer) error {
 	mux.Handle(http.MethodPost, pattern_UserService_Insert_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
@@ -160,15 +161,15 @@ func RegisterUserServiceHandlerFromEndpoint(ctx context.Context, mux *runtime.Se
 // RegisterUserServiceHandler registers the http handlers for service UserService to "mux".
 // The handlers forward requests to the grpc endpoint over "conn".
 func RegisterUserServiceHandler(ctx context.Context, mux *runtime.ServeMux, conn *grpc.ClientConn) error {
-	return RegisterUserServiceHandlerClient(ctx, mux, NewUserServiceClient(conn))
+	return RegisterUserServiceHandlerClient(ctx, mux, userpb.NewUserServiceClient(conn))
 }
 
 // RegisterUserServiceHandlerClient registers the http handlers for service UserService
-// to "mux". The handlers forward requests to the grpc endpoint over the given implementation of "UserServiceClient".
-// Note: the gRPC framework executes interceptors within the gRPC handler. If the passed in "UserServiceClient"
+// to "mux". The handlers forward requests to the grpc endpoint over the given implementation of "userpb.UserServiceClient".
+// Note: the gRPC framework executes interceptors within the gRPC handler. If the passed in "userpb.UserServiceClient"
 // doesn't go through the normal gRPC flow (creating a gRPC client etc.) then it will be up to the passed in
-// "UserServiceClient" to call the correct interceptors. This client ignores the HTTP middlewares.
-func RegisterUserServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux, client UserServiceClient) error {
+// "userpb.UserServiceClient" to call the correct interceptors. This client ignores the HTTP middlewares.
+func RegisterUserServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux, client userpb.UserServiceClient) error {
 	mux.Handle(http.MethodPost, pattern_UserService_Insert_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()

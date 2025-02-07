@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
@@ -12,23 +13,21 @@ import (
 )
 
 const (
-	APP_PORT      = ":3125"
-	GRPC_ENDPOINT = "localhost:3124"
+	APP_PORT      = ":8082"
+	GRPC_ENDPOINT = "localhost:8083"
 )
 
 func run() error {
 	ctx := context.Background()
-	ctx, cancel := context.WithCancel(ctx)
-	defer cancel()
-
-	// Register gRPC server endpoint
-	// Note: Make sure the gRPC server is running properly and accessible
 	mux := runtime.NewServeMux()
+
 	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
-	err := usersv.RegisterUsersServiceHandlerFromEndpoint(ctx, mux, GRPC_ENDPOINT, opts)
+	err := usersv.RegisterUserServiceHandlerFromEndpoint(ctx, mux, GRPC_ENDPOINT, opts)
 	if err != nil {
 		return err
-	} // Start HTTP server (and proxy calls to gRPC server endpoint)
+	}
+
+	fmt.Println("userproxy[GATEWAY] listen on port " + APP_PORT)
 	return http.ListenAndServe(APP_PORT, mux)
 }
 

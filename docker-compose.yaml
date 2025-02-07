@@ -29,10 +29,15 @@ services:
       context: .
       dockerfile: "./userproxy/grpc/Dockerfile"
     # image: "user_grpc:1.0.0"
-    ports:
-      - "8083:8083"
     depends_on:
     - db_user
+  user_gateway:
+    container_name: user_gateway
+    build:
+      context: .
+      dockerfile: "./userproxy/gateway/Dockerfile"
+    depends_on:
+      - user_grpc
   db_user:
     container_name: db_user
     image: postgres:latest
