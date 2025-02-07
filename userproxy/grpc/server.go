@@ -13,7 +13,7 @@ import (
 type UserServer struct {
 	db        *pgx.Conn
 	validator *validator.Validate
-	*usersv.UnimplementedUserServiceServer
+	usersv.UnimplementedUserServiceServer
 }
 
 func NewUserServer(db *pgx.Conn, validator *validator.Validate) *UserServer {
@@ -41,7 +41,7 @@ func (u *UserServer) Insert(ctx context.Context, req *usersv.InsertRequest) (*us
 		return nil, err
 	}
 
-	_, err = tx.Exec(ctx, "insert into users(id, username, email, password) values($1,$2,$3,%4)", uuid.NewString(), req.Username, req.Email, string(passByte))
+	_, err = tx.Exec(ctx, "insert into users(id, username, email, password) values($1,$2,$3,$4)", uuid.NewString(), req.Username, req.Email, string(passByte))
 	if err != nil {
 		return nil, err
 	}

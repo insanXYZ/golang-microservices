@@ -36,8 +36,6 @@ services:
   db_user:
     container_name: db_user
     image: postgres:latest
-    ports:
-      - "5432"
     environment:
       POSTGRES_DB: user_service
       POSTGRES_PASSWORD: 12345678
