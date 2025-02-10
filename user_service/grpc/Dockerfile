@@ -1,7 +1,7 @@
 FROM golang:1.23-alpine as builder
 
 WORKDIR /app
-COPY authproxy/gateway/ /app
+COPY user_service/grpc/ /app
 COPY proto /app/proto
 
 RUN go mod edit -replace=github.com/insanXYZ/proto=/app/proto

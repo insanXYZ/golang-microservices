@@ -4,13 +4,16 @@ import (
 	"context"
 	"fmt"
 	"net"
+	"os"
 
 	usersv "github.com/insanXYZ/proto/gen/go/user"
 	"github.com/insanXYZ/user-service-grpc/config"
 	"google.golang.org/grpc"
 )
 
-const APP_PORT = ":8083"
+var (
+	APP_PORT = os.Getenv("APP_PORT")
+)
 
 func main() {
 	ctx := context.Background()

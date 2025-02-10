@@ -3,32 +3,47 @@ services:
   # USER SERVICE
   user_grpc:
     container_name: user_grpc
+    environment:
+      - APP_PORT=:8083
     build:
       context: .
-      dockerfile: "./userproxy/grpc/Dockerfile"
+      dockerfile: "./user_service/grpc/Dockerfile"
     depends_on:
     - db_user
   user_gateway:
     container_name: user_gateway
+    ports:
+      - "8082:8082"
+    environment:
+      - APP_PORT=:8082
+      - GRPC_ENDPOINT=user_grpc:8083
     build:
       context: .
-      dockerfile: "./userproxy/gateway/Dockerfile"
+      dockerfile: "./user_service/gateway/Dockerfile"
     depends_on:
       - user_grpc
 
   # AUTH SERVICE
   auth_grpc:
     container_name: auth_grpc
+    environment:
+      - APP_PORT=:8081
+      - DIAL_USER_ENDPOINT=user_grpc:8083
     build:
       context: .
-      dockerfile: "./authproxy/grpc/Dockerfile"
+      dockerfile: "./auth_service/grpc/Dockerfile"
     depends_on:
     - user_grpc
   auth_gateway:
     container_name: auth_gateway
+    ports:
+      - "8080:8080"
+    environment:
+      - APP_PORT=:8080
+      - GRPC_ENDPOINT=auth_grpc:8081
     build:
       context: .
-      dockerfile: "./authproxy/gateway/Dockerfile"
+      dockerfile: "./auth_service/gateway/Dockerfile"
     depends_on:
       - auth_grpc
 

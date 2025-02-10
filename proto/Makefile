@@ -12,5 +12,11 @@ protoc:
 injectTag:
 	protoc-go-inject-tag -input="gen/go/*/*.pb.go"
 
+.PHONY: cutGateway
+cutGateway:
+	mv gen/gateway/proto/auth/* gen/go/auth
+	mv gen/gateway/proto/user/* gen/go/user
+	rm -rf gen/gateway/
+
 .PHONY: generate
-generate: protoc injectTag
+generate: protoc injectTag cutGateway
