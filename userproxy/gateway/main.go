@@ -14,7 +14,7 @@ import (
 
 const (
 	APP_PORT      = ":8082"
-	GRPC_ENDPOINT = "localhost:8083"
+	GRPC_ENDPOINT = "user_grpc:8083"
 )
 
 func run() error {

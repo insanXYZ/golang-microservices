@@ -65,7 +65,7 @@ func (u *UserServer) FindUserByEmail(ctx context.Context, req *usersv.FindUserBy
 
 	var user usersv.UserModel
 
-	err = u.db.QueryRow(ctx, "select id, username, email, password from users where email = $1", req.Email).Scan(&user.Id, &user.Username, &user.Email, &user.Password)
+	err = u.db.QueryRow(ctx, "select id, username, email from users where email = $1", req.Email).Scan(&user.Id, &user.Username, &user.Email)
 
 	if err != nil {
 		return nil, err

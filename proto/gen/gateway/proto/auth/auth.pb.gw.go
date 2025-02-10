@@ -16,7 +16,6 @@ import (
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/utilities"
-	authpb "github.com/insanXYZ/proto/gen/go/auth"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/grpclog"
@@ -36,9 +35,9 @@ var (
 	_ = metadata.Join
 )
 
-func request_AuthService_Register_0(ctx context.Context, marshaler runtime.Marshaler, client authpb.AuthServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_AuthService_Register_0(ctx context.Context, marshaler runtime.Marshaler, client AuthServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
-		protoReq authpb.RegisterRequest
+		protoReq RegisterRequest
 		metadata runtime.ServerMetadata
 	)
 	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
@@ -48,9 +47,9 @@ func request_AuthService_Register_0(ctx context.Context, marshaler runtime.Marsh
 	return msg, metadata, err
 }
 
-func local_request_AuthService_Register_0(ctx context.Context, marshaler runtime.Marshaler, server authpb.AuthServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_AuthService_Register_0(ctx context.Context, marshaler runtime.Marshaler, server AuthServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
-		protoReq authpb.RegisterRequest
+		protoReq RegisterRequest
 		metadata runtime.ServerMetadata
 	)
 	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
@@ -60,9 +59,9 @@ func local_request_AuthService_Register_0(ctx context.Context, marshaler runtime
 	return msg, metadata, err
 }
 
-func request_AuthService_Login_0(ctx context.Context, marshaler runtime.Marshaler, client authpb.AuthServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_AuthService_Login_0(ctx context.Context, marshaler runtime.Marshaler, client AuthServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
-		protoReq authpb.LoginRequest
+		protoReq LoginRequest
 		metadata runtime.ServerMetadata
 	)
 	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
@@ -72,9 +71,9 @@ func request_AuthService_Login_0(ctx context.Context, marshaler runtime.Marshale
 	return msg, metadata, err
 }
 
-func local_request_AuthService_Login_0(ctx context.Context, marshaler runtime.Marshaler, server authpb.AuthServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_AuthService_Login_0(ctx context.Context, marshaler runtime.Marshaler, server AuthServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
-		protoReq authpb.LoginRequest
+		protoReq LoginRequest
 		metadata runtime.ServerMetadata
 	)
 	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
@@ -85,11 +84,11 @@ func local_request_AuthService_Login_0(ctx context.Context, marshaler runtime.Ma
 }
 
 // RegisterAuthServiceHandlerServer registers the http handlers for service AuthService to "mux".
-// UnaryRPC     :call authpb.AuthServiceServer directly.
+// UnaryRPC     :call AuthServiceServer directly.
 // StreamingRPC :currently unsupported pending https://github.com/grpc/grpc-go/issues/906.
 // Note that using this registration option will cause many gRPC library features to stop working. Consider using RegisterAuthServiceHandlerFromEndpoint instead.
 // GRPC interceptors will not work for this type of registration. To use interceptors, you must use the "runtime.WithMiddlewares" option in the "runtime.NewServeMux" call.
-func RegisterAuthServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux, server authpb.AuthServiceServer) error {
+func RegisterAuthServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux, server AuthServiceServer) error {
 	mux.Handle(http.MethodPost, pattern_AuthService_Register_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
@@ -161,15 +160,15 @@ func RegisterAuthServiceHandlerFromEndpoint(ctx context.Context, mux *runtime.Se
 // RegisterAuthServiceHandler registers the http handlers for service AuthService to "mux".
 // The handlers forward requests to the grpc endpoint over "conn".
 func RegisterAuthServiceHandler(ctx context.Context, mux *runtime.ServeMux, conn *grpc.ClientConn) error {
-	return RegisterAuthServiceHandlerClient(ctx, mux, authpb.NewAuthServiceClient(conn))
+	return RegisterAuthServiceHandlerClient(ctx, mux, NewAuthServiceClient(conn))
 }
 
 // RegisterAuthServiceHandlerClient registers the http handlers for service AuthService
-// to "mux". The handlers forward requests to the grpc endpoint over the given implementation of "authpb.AuthServiceClient".
-// Note: the gRPC framework executes interceptors within the gRPC handler. If the passed in "authpb.AuthServiceClient"
+// to "mux". The handlers forward requests to the grpc endpoint over the given implementation of "AuthServiceClient".
+// Note: the gRPC framework executes interceptors within the gRPC handler. If the passed in "AuthServiceClient"
 // doesn't go through the normal gRPC flow (creating a gRPC client etc.) then it will be up to the passed in
-// "authpb.AuthServiceClient" to call the correct interceptors. This client ignores the HTTP middlewares.
-func RegisterAuthServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux, client authpb.AuthServiceClient) error {
+// "AuthServiceClient" to call the correct interceptors. This client ignores the HTTP middlewares.
+func RegisterAuthServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux, client AuthServiceClient) error {
 	mux.Handle(http.MethodPost, pattern_AuthService_Register_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()

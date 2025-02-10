@@ -34,8 +34,7 @@ func migrateTable(ctx context.Context, db *pgx.Conn) error {
 }
 
 func NewDatabase(ctx context.Context) (*pgx.Conn, error) {
-	// conn, err := pgx.Connect(ctx, "postgres://postgres:12345678@db_user:5432/user_service")
-	conn, err := pgx.Connect(ctx, "postgres://postgres:@localhost:5432/user_service")
+	conn, err := pgx.Connect(ctx, "postgres://postgres:12345678@db_user:5432/user_service")
 	if err != nil {
 		return nil, err
 	}

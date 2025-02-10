@@ -1,34 +1,11 @@
 services:
-  # auth_gateway:
-  #   container_name: auth_gateway
-  #   build:
-  #     context: "./authproxy/gateway/"
-  #     dockerfile: Dockerfile
-  #   image: "auth_gateway:1.0.0"
-  #   ports:
-  #     - "8080"
-  # auth_grpc:
-  #   container_name: auth_grpc
-  #   build:
-  #     context: "./authproxy/grpc"
-  #     dockerfile: Dockerfile
-  #   image: "auth_grpc:1.0.0"
-  #   ports:
-  #     - "8081"
-  # user_gateway:
-  #   container_name: user_gateway
-  #   build:
-  #     context: "./userproxy/gateway"
-  #     dockerfile: Dockerfile
-  #   image: "user_gateway:1.0.0"
-  #   ports:
-  #     - "8082"
+
+  # USER SERVICE
   user_grpc:
     container_name: user_grpc
     build:
       context: .
       dockerfile: "./userproxy/grpc/Dockerfile"
-    # image: "user_grpc:1.0.0"
     depends_on:
     - db_user
   user_gateway:
@@ -38,6 +15,24 @@ services:
       dockerfile: "./userproxy/gateway/Dockerfile"
     depends_on:
       - user_grpc
+
+  # AUTH SERVICE
+  auth_grpc:
+    container_name: auth_grpc
+    build:
+      context: .
+      dockerfile: "./authproxy/grpc/Dockerfile"
+    depends_on:
+    - user_grpc
+  auth_gateway:
+    container_name: auth_gateway
+    build:
+      context: .
+      dockerfile: "./authproxy/gateway/Dockerfile"
+    depends_on:
+      - auth_grpc
+
+  # DATABASE
   db_user:
     container_name: db_user
     image: postgres:latest

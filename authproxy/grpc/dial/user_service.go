@@ -5,7 +5,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-const USER_SERVICE_PORT = "localhost:8083"
+const USER_SERVICE_PORT = "user_grpc:8083"
 
 func NewUserServiceClient() usersv.UserServiceClient {
 	clientConn, err := grpc.NewClient(USER_SERVICE_PORT, opts)
