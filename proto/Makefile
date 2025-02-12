@@ -1,5 +1,6 @@
 .PHONY: protoc
 protoc:
+	mkdir gen/gateway/
 	protoc -I . --grpc-gateway_out ./gen/gateway \
 	--openapiv2_out ./gen/gateway \
 	--openapiv2_opt generate_unbound_methods=true \
