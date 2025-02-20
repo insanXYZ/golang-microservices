@@ -35,18 +35,12 @@
         },
         "parameters": [
           {
-            "name": "email",
-            "description": "@gotags: validate:\"required,email\"",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "password",
-            "description": "@gotags: validate:\"required,gt=8\"",
-            "in": "query",
-            "required": false,
-            "type": "string"
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/authLoginRequest"
+            }
           }
         ],
         "tags": [
@@ -73,25 +67,12 @@
         },
         "parameters": [
           {
-            "name": "username",
-            "description": "@gotags: validate:\"required,gt=4\"",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "password",
-            "description": "@gotags: validate:\"required,gt=8\"",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "email",
-            "description": "@gotags: validate:\"required,email\"",
-            "in": "query",
-            "required": false,
-            "type": "string"
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/authRegisterRequest"
+            }
           }
         ],
         "tags": [
@@ -123,11 +104,41 @@
     }
   },
   "definitions": {
+    "authLoginRequest": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "title": "@gotags: validate:\"required,email\""
+        },
+        "password": {
+          "type": "string",
+          "title": "@gotags: validate:\"required,gt=8\""
+        }
+      }
+    },
     "authLoginResponse": {
       "type": "object",
       "properties": {
         "message": {
           "type": "string"
+        }
+      }
+    },
+    "authRegisterRequest": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string",
+          "title": "@gotags: validate:\"required,gt=4\""
+        },
+        "password": {
+          "type": "string",
+          "title": "@gotags: validate:\"required,gt=8\""
+        },
+        "email": {
+          "type": "string",
+          "title": "@gotags: validate:\"required,email\""
         }
       }
     },

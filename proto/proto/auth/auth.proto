@@ -33,15 +33,17 @@ service AuthService {
   rpc Register(RegisterRequest) returns (RegisterResponse){
     option (google.api.http) = {
       post : "/api/auth/register"
+      body : "*"
     };
   }
   rpc Login(LoginRequest) returns (LoginResponse){
     option (google.api.http) = {
       post : "/api/auth/login"
+      body : "*"
     };
   }
   rpc Verify(google.protobuf.Empty) returns (VerifyResponse){
-    option(google.api.http) = {
+    option (google.api.http) = {
       get: "/api/auth/verify"
     };
   }
