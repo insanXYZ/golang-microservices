@@ -8,6 +8,7 @@ services:
     build:
       context: .
       dockerfile: "./user_service/grpc/Dockerfile"
+    restart: on-failure
     depends_on:
     - db_user
   user_gateway:
@@ -31,6 +32,7 @@ services:
     build:
       context: .
       dockerfile: "./auth_service/grpc/Dockerfile"
+    restart: on-failure
     depends_on:
     - user_grpc
   auth_gateway:

@@ -1,5 +1,6 @@
 .PHONY: protoc
 protoc:
+	rm -rf gen/gateway/
 	mkdir gen/gateway/
 	protoc -I . --grpc-gateway_out ./gen/gateway \
 	--openapiv2_out ./gen/gateway \
@@ -13,11 +14,11 @@ protoc:
 injectTag:
 	protoc-go-inject-tag -input="gen/go/*/*.pb.go"
 
-.PHONY: cutGateway
-cutGateway:
+.PHONY: initGatewayDir
+initGatewayDir:
 	mv gen/gateway/proto/auth/* gen/go/auth
 	mv gen/gateway/proto/user/* gen/go/user
 	rm -rf gen/gateway/
 
 .PHONY: generate
-generate: protoc injectTag cutGateway
+generate: protoc injectTag initGatewayDir 

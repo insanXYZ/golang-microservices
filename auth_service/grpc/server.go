@@ -11,6 +11,7 @@ import (
 	userpb "github.com/insanXYZ/proto/gen/go/user"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 type AuthServer struct {
@@ -99,5 +100,11 @@ func (s *AuthServer) Login(ctx context.Context, req *authpb.LoginRequest) (*auth
 
 	return &authpb.LoginResponse{
 		Message: "success login",
+	}, nil
+}
+
+func (s *AuthServer) Verify(ctx context.Context, _ *emptypb.Empty) (*authpb.VerifyResponse, error) {
+	return &authpb.VerifyResponse{
+		Message: "success verify",
 	}, nil
 }

@@ -11,7 +11,7 @@ message UserModel {
 }
 
 message FindUserByEmailRequest {
-  string email =1; // @gotags: validate:"required,email" 
+  string email = 1; // @gotags: validate:"required,email" 
 }
 
 message FindUserByEmailResponse {

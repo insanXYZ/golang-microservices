@@ -16,7 +16,7 @@
     "application/json"
   ],
   "paths": {
-    "/auth.AuthService/Login": {
+    "/api/auth/login": {
       "post": {
         "operationId": "AuthService_Login",
         "responses": {
@@ -35,12 +35,18 @@
         },
         "parameters": [
           {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/authLoginRequest"
-            }
+            "name": "email",
+            "description": "@gotags: validate:\"required,email\"",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "password",
+            "description": "@gotags: validate:\"required,gt=8\"",
+            "in": "query",
+            "required": false,
+            "type": "string"
           }
         ],
         "tags": [
@@ -48,7 +54,7 @@
         ]
       }
     },
-    "/auth.AuthService/Register": {
+    "/api/auth/register": {
       "post": {
         "operationId": "AuthService_Register",
         "responses": {
@@ -67,14 +73,49 @@
         },
         "parameters": [
           {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/authRegisterRequest"
-            }
+            "name": "username",
+            "description": "@gotags: validate:\"required,gt=4\"",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "password",
+            "description": "@gotags: validate:\"required,gt=8\"",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "email",
+            "description": "@gotags: validate:\"required,email\"",
+            "in": "query",
+            "required": false,
+            "type": "string"
           }
         ],
+        "tags": [
+          "AuthService"
+        ]
+      }
+    },
+    "/api/auth/verify": {
+      "get": {
+        "operationId": "AuthService_Verify",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/authVerifyResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
         "tags": [
           "AuthService"
         ]
@@ -82,19 +123,6 @@
     }
   },
   "definitions": {
-    "authLoginRequest": {
-      "type": "object",
-      "properties": {
-        "email": {
-          "type": "string",
-          "title": "@gotags: validate:\"required,email\""
-        },
-        "password": {
-          "type": "string",
-          "title": "@gotags: validate:\"required,gt=8\""
-        }
-      }
-    },
     "authLoginResponse": {
       "type": "object",
       "properties": {
@@ -103,24 +131,15 @@
         }
       }
     },
-    "authRegisterRequest": {
+    "authRegisterResponse": {
       "type": "object",
       "properties": {
-        "username": {
-          "type": "string",
-          "title": "@gotags: validate:\"required,gt=4\""
-        },
-        "password": {
-          "type": "string",
-          "title": "@gotags: validate:\"required,gt=8\""
-        },
-        "email": {
-          "type": "string",
-          "title": "@gotags: validate:\"required,email\""
+        "message": {
+          "type": "string"
         }
       }
     },
-    "authRegisterResponse": {
+    "authVerifyResponse": {
       "type": "object",
       "properties": {
         "message": {
