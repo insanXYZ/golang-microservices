@@ -10,7 +10,9 @@ import (
 	authpb "github.com/insanXYZ/proto/gen/go/auth"
 	userpb "github.com/insanXYZ/proto/gen/go/user"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
@@ -63,23 +65,22 @@ func (s *AuthServer) Login(ctx context.Context, req *authpb.LoginRequest) (*auth
 		return nil, err
 	}
 
-	accToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+	signedAccToken, err := s.createJwtToken(jwt.MapClaims{
 		"id":   res.User.Id,
 		"name": res.User.Username,
-		"exp":  time.Now().Add(10 * time.Second).Unix(),
+		"exp":  time.Now().Add(10 * time.Minute).Unix(),
 	})
 
-	refToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"id":   res.User.Id,
-		"name": res.User.Username,
-		"exp":  time.Now().Add(24 * time.Hour).Unix(),
-	})
-
-	signedAccToken, err := accToken.SignedString([]byte(os.Getenv("JWT_SECRET_KEY")))
 	if err != nil {
 		return nil, err
 	}
-	signedRefToken, err := refToken.SignedString([]byte(os.Getenv("JWT_SECRET_KEY")))
+
+	signedRefToken, err := s.createJwtToken(jwt.MapClaims{
+		"id":   res.User.Id,
+		"name": res.User.Username,
+		"exp":  time.Now().Add(24 * time.Minute).Unix(),
+	})
+
 	if err != nil {
 		return nil, err
 	}
@@ -91,20 +92,83 @@ func (s *AuthServer) Login(ctx context.Context, req *authpb.LoginRequest) (*auth
 
 	md := metadata.New(header)
 
-	ctx = metadata.NewOutgoingContext(ctx, md)
-
 	err = grpc.SetHeader(ctx, md)
 	if err != nil {
 		return nil, err
 	}
 
 	return &authpb.LoginResponse{
-		Message: "success login",
+		AccessToken:  signedAccToken,
+		RefreshToken: signedRefToken,
 	}, nil
 }
 
 func (s *AuthServer) Verify(ctx context.Context, _ *emptypb.Empty) (*authpb.VerifyResponse, error) {
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return nil, status.Error(codes.PermissionDenied, codes.PermissionDenied.String())
+	}
+
+	accToken := md.Get("access_token")[0]
+
+	_, err := jwt.Parse(accToken, func(t *jwt.Token) (interface{}, error) {
+		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, status.Errorf(codes.PermissionDenied, "Unexpected signing method: %v", t.Header["alg"])
+		}
+
+		return []byte(os.Getenv("JWT_SECRET_KEY")), nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
 	return &authpb.VerifyResponse{
 		Message: "success verify",
 	}, nil
+}
+
+func (s *AuthServer) Refresh(ctx context.Context, _ *emptypb.Empty) (*authpb.RefreshResponse, error) {
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return nil, status.Error(codes.PermissionDenied, codes.PermissionDenied.String())
+	}
+
+	refToken := md.Get("refresh_token")[0]
+
+	token, err := jwt.Parse(refToken, func(t *jwt.Token) (interface{}, error) {
+		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, status.Errorf(codes.PermissionDenied, "Unexpected signing method: %v", t.Header["alg"])
+		}
+
+		return []byte(os.Getenv("JWT_SECRET_KEY")), nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		return nil, status.Error(codes.PermissionDenied, "error assertion to jwt.mapclaims")
+	}
+
+	newAccToken, err := s.createJwtToken(jwt.MapClaims{
+		"id":   claims["id"],
+		"name": claims["name"],
+		"exp":  time.Now().Add(10 * time.Minute).Unix(),
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &authpb.RefreshResponse{
+		AccessToken: newAccToken,
+	}, nil
+}
+
+func (s *AuthServer) createJwtToken(claims jwt.MapClaims) (string, error) {
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	return token.SignedString([]byte(os.Getenv("JWT_SECRET_KEY")))
 }

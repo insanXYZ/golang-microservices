@@ -5,25 +5,28 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
-	usersv "github.com/insanXYZ/proto/gen/go/user"
+	authpb "github.com/insanXYZ/proto/gen/go/auth"
+	userpb "github.com/insanXYZ/proto/gen/go/user"
 	"github.com/jackc/pgx/v5"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type UserServer struct {
-	db        *pgx.Conn
-	validator *validator.Validate
-	usersv.UnimplementedUserServiceServer
+	db         *pgx.Conn
+	validator  *validator.Validate
+	authClient authpb.AuthServiceClient
+	userpb.UnimplementedUserServiceServer
 }
 
-func NewUserServer(db *pgx.Conn, validator *validator.Validate) *UserServer {
+func NewUserServer(db *pgx.Conn, authClient authpb.AuthServiceClient, validator *validator.Validate) *UserServer {
 	return &UserServer{
-		db:        db,
-		validator: validator,
+		db:         db,
+		validator:  validator,
+		authClient: authClient,
 	}
 }
 
-func (u *UserServer) Insert(ctx context.Context, req *usersv.InsertRequest) (*usersv.InsertResponse, error) {
+func (u *UserServer) Insert(ctx context.Context, req *userpb.InsertRequest) (*userpb.InsertResponse, error) {
 	err := u.validator.Struct(req)
 	if err != nil {
 		return nil, err
@@ -51,19 +54,19 @@ func (u *UserServer) Insert(ctx context.Context, req *usersv.InsertRequest) (*us
 		return nil, err
 	}
 
-	return &usersv.InsertResponse{
+	return &userpb.InsertResponse{
 		Message: "success create user",
 	}, nil
 
 }
 
-func (u *UserServer) FindUserByEmail(ctx context.Context, req *usersv.FindUserByEmailRequest) (*usersv.FindUserByEmailResponse, error) {
+func (u *UserServer) FindUserByEmail(ctx context.Context, req *userpb.FindUserByEmailRequest) (*userpb.FindUserByEmailResponse, error) {
 	err := u.validator.Struct(req)
 	if err != nil {
 		return nil, err
 	}
 
-	var user usersv.UserModel
+	var user userpb.UserModel
 
 	err = u.db.QueryRow(ctx, "select id, username, email from users where email = $1", req.Email).Scan(&user.Id, &user.Username, &user.Email)
 
@@ -71,7 +74,7 @@ func (u *UserServer) FindUserByEmail(ctx context.Context, req *usersv.FindUserBy
 		return nil, err
 	}
 
-	return &usersv.FindUserByEmailResponse{
+	return &userpb.FindUserByEmailResponse{
 		User: &user,
 	}, nil
 }

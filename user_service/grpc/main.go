@@ -6,8 +6,9 @@ import (
 	"net"
 	"os"
 
-	usersv "github.com/insanXYZ/proto/gen/go/user"
+	userpb "github.com/insanXYZ/proto/gen/go/user"
 	"github.com/insanXYZ/user-service-grpc/config"
+	"github.com/insanXYZ/user-service-grpc/dial"
 	"google.golang.org/grpc"
 )
 
@@ -25,12 +26,19 @@ func main() {
 	}
 	validator := config.NewValidator()
 
+	// dial client
+	authClient := dial.NewAuthServiceClient()
+
 	// main server
-	grpcServer := grpc.NewServer()
-	userServer := NewUserServer(pgxConn, validator)
+	userServer := NewUserServer(pgxConn, authClient, validator)
+	grpcServer := grpc.NewServer(
+		grpc.ChainUnaryInterceptor(
+			userServer.VerifyJwtInterceptor,
+		),
+	)
 
 	// register server
-	usersv.RegisterUserServiceServer(grpcServer, userServer)
+	userpb.RegisterUserServiceServer(grpcServer, userServer)
 
 	listen, err := net.Listen("tcp", APP_PORT)
 	if err != nil {

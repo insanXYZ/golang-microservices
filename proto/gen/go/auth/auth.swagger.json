@@ -48,6 +48,28 @@
         ]
       }
     },
+    "/api/auth/refresh": {
+      "get": {
+        "operationId": "AuthService_Refresh",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/authRefreshResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "AuthService"
+        ]
+      }
+    },
     "/api/auth/register": {
       "post": {
         "operationId": "AuthService_Register",
@@ -80,8 +102,8 @@
         ]
       }
     },
-    "/api/auth/verify": {
-      "get": {
+    "/auth.AuthService/Verify": {
+      "post": {
         "operationId": "AuthService_Verify",
         "responses": {
           "200": {
@@ -97,6 +119,17 @@
             }
           }
         },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          }
+        ],
         "tags": [
           "AuthService"
         ]
@@ -120,7 +153,18 @@
     "authLoginResponse": {
       "type": "object",
       "properties": {
-        "message": {
+        "accessToken": {
+          "type": "string"
+        },
+        "refreshToken": {
+          "type": "string"
+        }
+      }
+    },
+    "authRefreshResponse": {
+      "type": "object",
+      "properties": {
+        "accessToken": {
           "type": "string"
         }
       }

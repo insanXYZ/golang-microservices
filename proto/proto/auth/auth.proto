@@ -12,7 +12,12 @@ message LoginRequest {
 }
 
 message LoginResponse {
-  string message = 1;
+  string access_token = 1;
+  string refresh_token = 2;
+}
+
+message RefreshResponse {
+  string access_token = 1;
 }
 
 message RegisterRequest {
@@ -42,9 +47,10 @@ service AuthService {
       body : "*"
     };
   }
-  rpc Verify(google.protobuf.Empty) returns (VerifyResponse){
+  rpc Refresh(google.protobuf.Empty) returns (RefreshResponse){
     option (google.api.http) = {
-      get: "/api/auth/verify"
+      get : "/api/auth/refresh"
     };
   }
+  rpc Verify(google.protobuf.Empty) returns (VerifyResponse){}
 }
