@@ -86,8 +86,8 @@ func (s *AuthServer) Login(ctx context.Context, req *authpb.LoginRequest) (*auth
 	}
 
 	header := map[string]string{
-		"access_token":  signedAccToken,
-		"refresh_token": signedRefToken,
+		"access-token":  signedAccToken,
+		"refresh-token": signedRefToken,
 	}
 
 	md := metadata.New(header)
@@ -109,9 +109,12 @@ func (s *AuthServer) Verify(ctx context.Context, _ *emptypb.Empty) (*authpb.Veri
 		return nil, status.Error(codes.PermissionDenied, codes.PermissionDenied.String())
 	}
 
-	accToken := md.Get("access_token")[0]
+	accTokens := md.Get("access-token")
+	if len(accTokens) == 0 {
+		return nil, status.Error(codes.PermissionDenied, codes.PermissionDenied.String())
+	}
 
-	_, err := jwt.Parse(accToken, func(t *jwt.Token) (interface{}, error) {
+	_, err := jwt.Parse(accTokens[0], func(t *jwt.Token) (interface{}, error) {
 		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, status.Errorf(codes.PermissionDenied, "Unexpected signing method: %v", t.Header["alg"])
 		}
@@ -134,9 +137,13 @@ func (s *AuthServer) Refresh(ctx context.Context, _ *emptypb.Empty) (*authpb.Ref
 		return nil, status.Error(codes.PermissionDenied, codes.PermissionDenied.String())
 	}
 
-	refToken := md.Get("refresh_token")[0]
+	refTokens := md.Get("refresh-token")
 
-	token, err := jwt.Parse(refToken, func(t *jwt.Token) (interface{}, error) {
+	if len(refTokens) == 0 {
+		return nil, status.Error(codes.PermissionDenied, codes.PermissionDenied.String())
+	}
+
+	token, err := jwt.Parse(refTokens[0], func(t *jwt.Token) (interface{}, error) {
 		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, status.Errorf(codes.PermissionDenied, "Unexpected signing method: %v", t.Header["alg"])
 		}

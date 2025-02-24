@@ -1,10 +1,11 @@
 # this file is not config
-# only for knowing all port on proxy
-AuthProxy:
+
+AuthService:
   - gateway : 8080
   - grpc : 8081
-UserProxy:
+UserService:
   - gateway : 8082
   - grpc : 8083
-  
-
+ChatService:
+  - gateway : 8084
+  - grpc : 8085

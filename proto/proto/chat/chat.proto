@@ -1,0 +1,19 @@
+syntax="proto3";
+
+package chat;
+
+import "proto/google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+option go_package = "./chat";
+
+message UpgradeResponse {
+    string message =1 ;
+}
+
+service ChatService{
+    rpc Upgrade(google.protobuf.Empty) returns (UpgradeResponse){
+        option (google.api.http) = {
+            get : "/api/chat/upgrade"
+        };
+    }
+}

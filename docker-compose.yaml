@@ -5,7 +5,7 @@ services:
     container_name: user_grpc
     environment:
       - APP_PORT=:8083
-      - DIAL_AUTH_ENDPOINT=auth_grpc:8081 # for interceptor
+      - DIAL_AUTH_ENDPOINT=auth_grpc:8081 
     build:
       context: .
       dockerfile: "./user_service/grpc/Dockerfile"
