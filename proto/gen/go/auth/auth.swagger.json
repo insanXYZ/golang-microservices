@@ -102,8 +102,8 @@
         ]
       }
     },
-    "/auth.AuthService/Verify": {
-      "post": {
+    "/api/auth/verify": {
+      "get": {
         "operationId": "AuthService_Verify",
         "responses": {
           "200": {
@@ -119,17 +119,6 @@
             }
           }
         },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "type": "object",
-              "properties": {}
-            }
-          }
-        ],
         "tags": [
           "AuthService"
         ]

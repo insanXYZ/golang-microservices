@@ -52,5 +52,9 @@ service AuthService {
       get : "/api/auth/refresh"
     };
   }
-  rpc Verify(google.protobuf.Empty) returns (VerifyResponse){}
+  rpc Verify(google.protobuf.Empty) returns (VerifyResponse){
+    option (google.api.http) = {
+      get : "/api/auth/verify"
+    };
+  }
 }
