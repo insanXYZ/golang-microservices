@@ -2,7 +2,7 @@ package main
 
 import (
 	"auth-service-grpc/dial"
-	"fmt"
+	"log"
 	"net"
 
 	"github.com/go-playground/validator/v10"
@@ -11,25 +11,31 @@ import (
 )
 
 const (
-	APP_PORT = ":8081"
+	APP_PORT   = ":8081"
+	LOG_PREFIX = "[GRPC AUTH]"
 )
 
 func main() {
 	grpcServer := grpc.NewServer()
 
-	initServer := NewAuthServer(dial.NewUserServiceClient(), validator.New())
+	userClient, err := dial.NewUserServiceClient()
+	if err != nil {
+		log.Fatal(LOG_PREFIX, "Error dial :", err.Error())
+	}
+
+	initServer := NewAuthServer(userClient, validator.New())
 
 	authsv.RegisterAuthServiceServer(grpcServer, initServer)
 
 	listen, err := net.Listen("tcp", APP_PORT)
 	if err != nil {
-		panic(err.Error())
+		log.Fatal(LOG_PREFIX, "Error listen port :", err.Error())
 	}
 
-	fmt.Println("authproxy[GRPC] listen on port " + APP_PORT)
+	log.Println(LOG_PREFIX, "listen on port "+APP_PORT)
 	err = grpcServer.Serve(listen)
 	if err != nil {
-		panic(err.Error())
+		log.Fatal(LOG_PREFIX, "Error server grpc :", err.Error())
 	}
 
 }

@@ -1,11 +1,8 @@
 package main
 
 import (
-	"context"
-
 	authpb "github.com/insanXYZ/proto/gen/go/auth"
 	chatpb "github.com/insanXYZ/proto/gen/go/chat"
-	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 type ChatService struct {
@@ -13,12 +10,8 @@ type ChatService struct {
 	chatpb.UnimplementedChatServiceServer
 }
 
-func NewChatService(authClient authpb.AuthServiceClient) chatpb.ChatServiceServer {
+func NewChatServer(authClient authpb.AuthServiceClient) *ChatService {
 	return &ChatService{
 		authClient: authClient,
 	}
-}
-
-func (c *ChatService) Upgrade(ctx context.Context, _ *emptypb.Empty) (*chatpb.UpgradeResponse, error) {
-	return nil, nil
 }

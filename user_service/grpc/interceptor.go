@@ -10,7 +10,7 @@ import (
 )
 
 func (u *UserServer) VerifyJwtInterceptor(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp any, err error) {
-	fmt.Println("[INTERCEPTOR USER GRPC] verify jwt")
+	fmt.Println(LOG_PREFIX, "verify jwt interceptor")
 
 	excludeMethods := []string{
 		userpb.UserService_FindUserByEmail_FullMethodName,
@@ -21,5 +21,11 @@ func (u *UserServer) VerifyJwtInterceptor(ctx context.Context, req any, info *gr
 		return handler(ctx, req)
 	}
 
-	return u.authClient.Verify(ctx, nil)
+	_, err = u.authClient.Verify(ctx, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return handler(ctx, req)
 }

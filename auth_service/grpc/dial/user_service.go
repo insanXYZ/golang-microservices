@@ -9,11 +9,11 @@ import (
 
 var USER_SERVICE_PORT = os.Getenv("DIAL_USER_ENDPOINT")
 
-func NewUserServiceClient() userpb.UserServiceClient {
+func NewUserServiceClient() (userpb.UserServiceClient, error) {
 	clientConn, err := grpc.NewClient(USER_SERVICE_PORT, opts)
 	if err != nil {
-		panic(err.Error())
+		return nil, err
 	}
 
-	return userpb.NewUserServiceClient(clientConn)
+	return userpb.NewUserServiceClient(clientConn), nil
 }

@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"fmt"
+	"log"
 	"net"
 	"os"
 
@@ -13,7 +13,8 @@ import (
 )
 
 var (
-	APP_PORT = os.Getenv("APP_PORT")
+	APP_PORT   = os.Getenv("APP_PORT")
+	LOG_PREFIX = "[GRPC USER]"
 )
 
 func main() {
@@ -22,13 +23,15 @@ func main() {
 	// config
 	pgxConn, err := config.NewDatabase(ctx)
 	if err != nil {
-		panic(err.Error())
+		log.Fatal(LOG_PREFIX, "Error connect database :", err.Error())
 	}
 	validator := config.NewValidator()
 
 	// dial client
-	authClient := dial.NewAuthServiceClient()
-
+	authClient, err := dial.NewAuthServiceClient()
+	if err != nil {
+		log.Fatal(LOG_PREFIX, "Error dial :", err.Error())
+	}
 	// main server
 	userServer := NewUserServer(pgxConn, authClient, validator)
 	grpcServer := grpc.NewServer(
@@ -42,12 +45,12 @@ func main() {
 
 	listen, err := net.Listen("tcp", APP_PORT)
 	if err != nil {
-		panic(err.Error())
+		log.Fatal(LOG_PREFIX, "Error listen port :", err.Error())
 	}
 
-	fmt.Println("userproxy[GRPC] listen on port " + APP_PORT)
+	log.Println(LOG_PREFIX, "listen on port "+APP_PORT)
 	err = grpcServer.Serve(listen)
 	if err != nil {
-		panic(err.Error())
+		log.Fatal(LOG_PREFIX, "Error server grpc server :", err.Error())
 	}
 }
