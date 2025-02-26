@@ -20,14 +20,16 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	ChatService_Upgrade_FullMethodName = "/chat.ChatService/Upgrade"
+	ChatService_Upgrade_FullMethodName          = "/chat.ChatService/Upgrade"
+	ChatService_BroadcastMessage_FullMethodName = "/chat.ChatService/BroadcastMessage"
 )
 
 // ChatServiceClient is the client API for ChatService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ChatServiceClient interface {
-	Upgrade(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*UpgradeResponse, error)
+	Upgrade(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (grpc.ServerStreamingClient[Message], error)
+	BroadcastMessage(ctx context.Context, in *Message, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type chatServiceClient struct {
@@ -38,10 +40,29 @@ func NewChatServiceClient(cc grpc.ClientConnInterface) ChatServiceClient {
 	return &chatServiceClient{cc}
 }
 
-func (c *chatServiceClient) Upgrade(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*UpgradeResponse, error) {
+func (c *chatServiceClient) Upgrade(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (grpc.ServerStreamingClient[Message], error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(UpgradeResponse)
-	err := c.cc.Invoke(ctx, ChatService_Upgrade_FullMethodName, in, out, cOpts...)
+	stream, err := c.cc.NewStream(ctx, &ChatService_ServiceDesc.Streams[0], ChatService_Upgrade_FullMethodName, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &grpc.GenericClientStream[emptypb.Empty, Message]{ClientStream: stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type ChatService_UpgradeClient = grpc.ServerStreamingClient[Message]
+
+func (c *chatServiceClient) BroadcastMessage(ctx context.Context, in *Message, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, ChatService_BroadcastMessage_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -52,7 +73,8 @@ func (c *chatServiceClient) Upgrade(ctx context.Context, in *emptypb.Empty, opts
 // All implementations must embed UnimplementedChatServiceServer
 // for forward compatibility.
 type ChatServiceServer interface {
-	Upgrade(context.Context, *emptypb.Empty) (*UpgradeResponse, error)
+	Upgrade(*emptypb.Empty, grpc.ServerStreamingServer[Message]) error
+	BroadcastMessage(context.Context, *Message) (*emptypb.Empty, error)
 	mustEmbedUnimplementedChatServiceServer()
 }
 
@@ -63,8 +85,11 @@ type ChatServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedChatServiceServer struct{}
 
-func (UnimplementedChatServiceServer) Upgrade(context.Context, *emptypb.Empty) (*UpgradeResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Upgrade not implemented")
+func (UnimplementedChatServiceServer) Upgrade(*emptypb.Empty, grpc.ServerStreamingServer[Message]) error {
+	return status.Errorf(codes.Unimplemented, "method Upgrade not implemented")
+}
+func (UnimplementedChatServiceServer) BroadcastMessage(context.Context, *Message) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BroadcastMessage not implemented")
 }
 func (UnimplementedChatServiceServer) mustEmbedUnimplementedChatServiceServer() {}
 func (UnimplementedChatServiceServer) testEmbeddedByValue()                     {}
@@ -87,20 +112,31 @@ func RegisterChatServiceServer(s grpc.ServiceRegistrar, srv ChatServiceServer) {
 	s.RegisterService(&ChatService_ServiceDesc, srv)
 }
 
-func _ChatService_Upgrade_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(emptypb.Empty)
+func _ChatService_Upgrade_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(emptypb.Empty)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(ChatServiceServer).Upgrade(m, &grpc.GenericServerStream[emptypb.Empty, Message]{ServerStream: stream})
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type ChatService_UpgradeServer = grpc.ServerStreamingServer[Message]
+
+func _ChatService_BroadcastMessage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Message)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ChatServiceServer).Upgrade(ctx, in)
+		return srv.(ChatServiceServer).BroadcastMessage(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: ChatService_Upgrade_FullMethodName,
+		FullMethod: ChatService_BroadcastMessage_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ChatServiceServer).Upgrade(ctx, req.(*emptypb.Empty))
+		return srv.(ChatServiceServer).BroadcastMessage(ctx, req.(*Message))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -113,10 +149,16 @@ var ChatService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*ChatServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "Upgrade",
-			Handler:    _ChatService_Upgrade_Handler,
+			MethodName: "BroadcastMessage",
+			Handler:    _ChatService_BroadcastMessage_Handler,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
+	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "Upgrade",
+			Handler:       _ChatService_Upgrade_Handler,
+			ServerStreams: true,
+		},
+	},
 	Metadata: "proto/chat/chat.proto",
 }

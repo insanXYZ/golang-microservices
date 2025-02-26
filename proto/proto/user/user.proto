@@ -4,7 +4,7 @@ package user;
 
 option go_package="./user";
 
-message UserModel {
+message User {
   string id = 1 ;
   string username = 2 ;
   string email = 3 ;
@@ -15,7 +15,7 @@ message FindUserByEmailRequest {
 }
 
 message FindUserByEmailResponse {
-  UserModel user = 1;
+  User user = 1;
 }
 
 message InsertRequest {

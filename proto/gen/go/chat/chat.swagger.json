@@ -21,9 +21,18 @@
         "operationId": "ChatService_Upgrade",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "A successful response.(streaming responses)",
             "schema": {
-              "$ref": "#/definitions/chatUpgradeResponse"
+              "type": "object",
+              "properties": {
+                "result": {
+                  "$ref": "#/definitions/chatMessage"
+                },
+                "error": {
+                  "$ref": "#/definitions/rpcStatus"
+                }
+              },
+              "title": "Stream result of chatMessage"
             }
           },
           "default": {
@@ -37,13 +46,52 @@
           "ChatService"
         ]
       }
+    },
+    "/chat.ChatService/BroadcastMessage": {
+      "post": {
+        "operationId": "ChatService_BroadcastMessage",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/chatMessage"
+            }
+          }
+        ],
+        "tags": [
+          "ChatService"
+        ]
+      }
     }
   },
   "definitions": {
-    "chatUpgradeResponse": {
+    "chatMessage": {
       "type": "object",
       "properties": {
+        "User": {
+          "$ref": "#/definitions/userUser"
+        },
         "message": {
+          "type": "string"
+        },
+        "timestamp": {
           "type": "string"
         }
       }
@@ -73,6 +121,20 @@
             "type": "object",
             "$ref": "#/definitions/protobufAny"
           }
+        }
+      }
+    },
+    "userUser": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
         }
       }
     }

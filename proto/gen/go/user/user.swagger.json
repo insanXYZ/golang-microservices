@@ -123,7 +123,7 @@
       "type": "object",
       "properties": {
         "user": {
-          "$ref": "#/definitions/userUserModel"
+          "$ref": "#/definitions/userUser"
         }
       }
     },
@@ -152,7 +152,7 @@
         }
       }
     },
-    "userUserModel": {
+    "userUser": {
       "type": "object",
       "properties": {
         "id": {
