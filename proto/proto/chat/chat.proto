@@ -3,13 +3,8 @@ syntax="proto3";
 package chat;
 
 import "proto/google/api/annotations.proto";
-import "google/protobuf/empty.proto";
 import "proto/user/user.proto";
 option go_package = "./chat";
-
-message UpgradeResponse {
-    string message = 1 ;
-}
 
 message Message {
     user.User User = 1 ;
@@ -17,11 +12,10 @@ message Message {
     string timestamp = 3;
 }
 
-service ChatService{
-    rpc Upgrade(google.protobuf.Empty) returns (stream Message){
+service ChatService {
+    rpc BroadcastMessage(stream Message) returns (stream Message){
         option (google.api.http) = {
-            get : "/api/chat/upgrade"
+            post : "/v1/chat/broadcast"
         };
     }
-    rpc BroadcastMessage(Message) returns (google.protobuf.Empty){}
 }

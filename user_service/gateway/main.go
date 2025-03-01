@@ -7,7 +7,7 @@ import (
 	"os"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
-	usersv "github.com/insanXYZ/proto/gen/go/user"
+	userpb "github.com/insanXYZ/proto/gen/go/user"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/grpclog"
@@ -23,7 +23,7 @@ func run() error {
 	mux := runtime.NewServeMux()
 
 	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
-	err := usersv.RegisterUserServiceHandlerFromEndpoint(ctx, mux, GRPC_ENDPOINT, opts)
+	err := userpb.RegisterUserServiceHandlerFromEndpoint(ctx, mux, GRPC_ENDPOINT, opts)
 	if err != nil {
 		return err
 	}

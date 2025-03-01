@@ -22,4 +22,4 @@ require (
 	google.golang.org/protobuf v1.36.1 // indirect
 )
 
-replace github.com/insanXYZ/proto => ../../proto/
+replace github.com/insanXYZ/proto => ../../proto

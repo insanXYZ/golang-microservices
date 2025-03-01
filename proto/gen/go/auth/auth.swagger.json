@@ -186,8 +186,8 @@
     "authVerifyResponse": {
       "type": "object",
       "properties": {
-        "message": {
-          "type": "string"
+        "User": {
+          "$ref": "#/definitions/userUser"
         }
       }
     },
@@ -216,6 +216,20 @@
             "type": "object",
             "$ref": "#/definitions/protobufAny"
           }
+        }
+      }
+    },
+    "userUser": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
         }
       }
     }

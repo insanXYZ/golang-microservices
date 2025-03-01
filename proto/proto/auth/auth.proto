@@ -3,6 +3,7 @@ syntax="proto3";
 package auth;
 
 import "proto/google/api/annotations.proto";
+import "proto/user/user.proto";
 import "google/protobuf/empty.proto";
 option go_package = "./auth";
 
@@ -31,7 +32,7 @@ message RegisterResponse {
 }
 
 message VerifyResponse {
-  string message = 1;
+  user.User User = 1;
 }
 
 service AuthService {

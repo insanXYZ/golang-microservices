@@ -14,4 +14,4 @@ require (
 	google.golang.org/protobuf v1.36.5 // indirect
 )
 
-replace github.com/insanXYZ/proto => ../../proto/
+replace github.com/insanXYZ/proto => ../../proto
