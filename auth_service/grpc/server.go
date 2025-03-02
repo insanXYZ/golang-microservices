@@ -2,12 +2,14 @@ package main
 
 import (
 	"context"
+	"log"
 	"os"
 	"time"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/golang-jwt/jwt/v5"
 	authpb "github.com/insanXYZ/proto/gen/go/auth"
+	chatpb "github.com/insanXYZ/proto/gen/go/chat"
 	userpb "github.com/insanXYZ/proto/gen/go/user"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -18,13 +20,15 @@ import (
 
 type AuthServer struct {
 	userClient userpb.UserServiceClient
+	chatClient chatpb.ChatServiceClient
 	validator  *validator.Validate
 	authpb.UnimplementedAuthServiceServer
 }
 
-func NewAuthServer(userClient userpb.UserServiceClient, validator *validator.Validate) *AuthServer {
+func NewAuthServer(userClient userpb.UserServiceClient, chatClient chatpb.ChatServiceClient, validator *validator.Validate) *AuthServer {
 	return &AuthServer{
 		userClient: userClient,
+		chatClient: chatClient,
 		validator:  validator,
 	}
 }
@@ -97,6 +101,12 @@ func (s *AuthServer) Login(ctx context.Context, req *authpb.LoginRequest) (*auth
 		return nil, err
 	}
 
+	_, err = s.chatClient.Subscribe(ctx, nil)
+	if err != nil {
+		log.Println(LOG_PREFIX, "Error subscribe user :", err.Error())
+		return nil, err
+	}
+
 	return &authpb.LoginResponse{
 		AccessToken:  signedAccToken,
 		RefreshToken: signedRefToken,
@@ -114,7 +124,7 @@ func (s *AuthServer) Verify(ctx context.Context, _ *emptypb.Empty) (*authpb.Veri
 		return nil, status.Error(codes.PermissionDenied, codes.PermissionDenied.String())
 	}
 
-	_, err := jwt.Parse(accTokens[0], func(t *jwt.Token) (interface{}, error) {
+	token, err := jwt.Parse(accTokens[0], func(t *jwt.Token) (interface{}, error) {
 		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, status.Errorf(codes.PermissionDenied, "Unexpected signing method: %v", t.Header["alg"])
 		}
@@ -127,7 +137,11 @@ func (s *AuthServer) Verify(ctx context.Context, _ *emptypb.Empty) (*authpb.Veri
 	}
 
 	return &authpb.VerifyResponse{
-		Message: "success verify",
+		User: &userpb.User{
+			Id:       claims["id"].(string),
+			Username: claims["username"].(string),
+			Email:    claims["email"].(string),
+		},
 	}, nil
 }
 

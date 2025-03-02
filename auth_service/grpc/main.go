@@ -23,7 +23,12 @@ func main() {
 		log.Fatal(LOG_PREFIX, "Error dial :", err.Error())
 	}
 
-	initServer := NewAuthServer(userClient, validator.New())
+	chatClient, err := dial.NewChatServiceClient()
+	if err != nil {
+		log.Fatal(LOG_PREFIX, "Error dial :", err.Error())
+	}
+
+	initServer := NewAuthServer(userClient, chatClient, validator.New())
 
 	authsv.RegisterAuthServiceServer(grpcServer, initServer)
 

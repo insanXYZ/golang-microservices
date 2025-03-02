@@ -29,7 +29,9 @@ func (c *ChatService) BroadcastMessage(ctx context.Context, msg *chatpb.Message)
 	if !ok {
 		return nil, status.Error(codes.PermissionDenied, codes.PermissionDenied.String())
 	}
-	c.Hub.Append(md["username"][0] , &Client{
-		stream: ,
-	})
+	// c.Hub.Append(md["username"][0] , &Client{
+	// 	stream: ,
+	// })
 }
+
+func (c *ChatService) Subscribe(context.Context, *emptypb.Empty) (*emptypb.Empty, error)
