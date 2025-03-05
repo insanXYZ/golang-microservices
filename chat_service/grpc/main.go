@@ -24,7 +24,7 @@ func main() {
 	// server init
 	chatServer := NewChatServer(authClient)
 	grpc.ChainStreamInterceptor()
-	grpcServer := grpc.NewServer(grpc.ChainStreamInterceptor(chatServer.StreamVerifyJwtInterceptor))
+	grpcServer := grpc.NewServer(grpc.ChainStreamInterceptor(chatServer.StreamVerifyJwtInterceptor), grpc.ChainUnaryInterceptor())
 
 	listen, err := net.Listen("tcp", APP_PORT)
 	if err != nil {

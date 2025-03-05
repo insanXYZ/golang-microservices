@@ -4,9 +4,9 @@ type id = string
 
 type Hub map[id]*Client
 
-func NewHub() *Hub {
+func NewHub() Hub {
 	h := make(Hub)
-	return &h
+	return h
 }
 
 func (h Hub) Append(key id, client *Client) {

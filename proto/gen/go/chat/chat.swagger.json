@@ -16,57 +16,15 @@
     "application/json"
   ],
   "paths": {
-    "/chat.ChatService/Subscribe": {
+    "/v1/chat/broadcast": {
       "post": {
-        "operationId": "ChatService_Subscribe",
+        "operationId": "ChatService_BroadcastMessage",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
               "type": "object",
               "properties": {}
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "type": "object",
-              "properties": {}
-            }
-          }
-        ],
-        "tags": [
-          "ChatService"
-        ]
-      }
-    },
-    "/v1/chat/broadcast": {
-      "post": {
-        "operationId": "ChatService_BroadcastMessage",
-        "responses": {
-          "200": {
-            "description": "A successful response.(streaming responses)",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "result": {
-                  "$ref": "#/definitions/chatMessage"
-                },
-                "error": {
-                  "$ref": "#/definitions/rpcStatus"
-                }
-              },
-              "title": "Stream result of chatMessage"
             }
           },
           "default": {
@@ -108,6 +66,37 @@
             "type": "string"
           }
         ],
+        "tags": [
+          "ChatService"
+        ]
+      }
+    },
+    "/v1/chat/subscribe": {
+      "get": {
+        "operationId": "ChatService_Subscribe",
+        "responses": {
+          "200": {
+            "description": "A successful response.(streaming responses)",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "result": {
+                  "$ref": "#/definitions/chatMessage"
+                },
+                "error": {
+                  "$ref": "#/definitions/rpcStatus"
+                }
+              },
+              "title": "Stream result of chatMessage"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
         "tags": [
           "ChatService"
         ]

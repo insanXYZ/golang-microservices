@@ -15,10 +15,14 @@ message Message {
 }
 
 service ChatService {
-    rpc BroadcastMessage(stream Message) returns (stream Message){
+    rpc BroadcastMessage(Message) returns (google.protobuf.Empty){
         option (google.api.http) = {
             post : "/v1/chat/broadcast"
         };
     }
-    rpc Subscribe(google.protobuf.Empty) returns (google.protobuf.Empty) {}
+    rpc Subscribe(google.protobuf.Empty) returns (stream Message) {
+        option (google.api.http) = {
+            get : "/v1/chat/subscribe"
+        };        
+    }
 }

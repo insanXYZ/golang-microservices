@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"log"
 	"os"
 	"time"
 
@@ -101,12 +100,6 @@ func (s *AuthServer) Login(ctx context.Context, req *authpb.LoginRequest) (*auth
 		return nil, err
 	}
 
-	_, err = s.chatClient.Subscribe(ctx, nil)
-	if err != nil {
-		log.Println(LOG_PREFIX, "Error subscribe user :", err.Error())
-		return nil, err
-	}
-
 	return &authpb.LoginResponse{
 		AccessToken:  signedAccToken,
 		RefreshToken: signedRefToken,
@@ -135,6 +128,8 @@ func (s *AuthServer) Verify(ctx context.Context, _ *emptypb.Empty) (*authpb.Veri
 	if err != nil {
 		return nil, err
 	}
+
+	claims := token.Claims.(jwt.MapClaims)
 
 	return &authpb.VerifyResponse{
 		User: &userpb.User{
