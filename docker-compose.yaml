@@ -47,6 +47,29 @@ services:
     depends_on:
       - auth_grpc
 
+  # CHAT SERVICE
+  chat_grpc:
+    container_name: chat_grpc
+    environment:
+      - DIAL_AUTH_ENDPOINT=auth_grpc:8081
+      - APP_PORT=:8085
+    build:
+      context: .
+      dockerfile: "./chat_service/grpc/Dockerfile"
+    depends_on:
+      - user_grpc
+      - auth_grpc
+  chat_gateway:
+    container_name: chat_gateway
+    environment:
+      - APP_PORT=:8084
+      - GRPC_ENDPOINT=chat_grpc:8085
+    build:
+      context: .
+      dockerfile: "./chat_service/gateway/Dockerfile"
+    depends_on:
+      - chat_grpc
+
   # PROXY SERVER
   proxy_server:
     container_name: proxy_server

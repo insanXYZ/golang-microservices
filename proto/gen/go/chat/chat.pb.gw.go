@@ -97,7 +97,7 @@ func RegisterChatServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/chat.ChatService/BroadcastMessage", runtime.WithHTTPPathPattern("/v1/chat/broadcast"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/chat.ChatService/BroadcastMessage", runtime.WithHTTPPathPattern("/api/chat/broadcast"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -162,7 +162,7 @@ func RegisterChatServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/chat.ChatService/BroadcastMessage", runtime.WithHTTPPathPattern("/v1/chat/broadcast"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/chat.ChatService/BroadcastMessage", runtime.WithHTTPPathPattern("/api/chat/broadcast"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -179,7 +179,7 @@ func RegisterChatServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/chat.ChatService/Subscribe", runtime.WithHTTPPathPattern("/v1/chat/subscribe"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/chat.ChatService/Subscribe", runtime.WithHTTPPathPattern("/api/chat/subscribe"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -196,8 +196,8 @@ func RegisterChatServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 }
 
 var (
-	pattern_ChatService_BroadcastMessage_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "chat", "broadcast"}, ""))
-	pattern_ChatService_Subscribe_0        = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "chat", "subscribe"}, ""))
+	pattern_ChatService_BroadcastMessage_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "chat", "broadcast"}, ""))
+	pattern_ChatService_Subscribe_0        = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "chat", "subscribe"}, ""))
 )
 
 var (

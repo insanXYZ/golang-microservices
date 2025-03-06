@@ -4,12 +4,14 @@ import (
 	"chat-service-grpc/dial"
 	"log"
 	"net"
+	"os"
 
+	chatpb "github.com/insanXYZ/proto/gen/go/chat"
 	"google.golang.org/grpc"
 )
 
-const (
-	APP_PORT   = ":8084"
+var (
+	APP_PORT   = os.Getenv("APP_PORT")
 	LOG_PREFIX = "[CHAT GRPC]"
 )
 
@@ -23,8 +25,9 @@ func main() {
 
 	// server init
 	chatServer := NewChatServer(authClient)
-	grpc.ChainStreamInterceptor()
-	grpcServer := grpc.NewServer(grpc.ChainStreamInterceptor(chatServer.StreamVerifyJwtInterceptor), grpc.ChainUnaryInterceptor())
+	grpcServer := grpc.NewServer(grpc.ChainStreamInterceptor(chatServer.StreamVerifyJwtInterceptor), grpc.ChainUnaryInterceptor(chatServer.UnaryVerifyJwtInterceptor))
+
+	chatpb.RegisterChatServiceServer(grpcServer, chatServer)
 
 	listen, err := net.Listen("tcp", APP_PORT)
 	if err != nil {

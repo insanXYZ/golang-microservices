@@ -16,7 +16,7 @@
     "application/json"
   ],
   "paths": {
-    "/v1/chat/broadcast": {
+    "/api/chat/broadcast": {
       "post": {
         "operationId": "ChatService_BroadcastMessage",
         "responses": {
@@ -71,7 +71,7 @@
         ]
       }
     },
-    "/v1/chat/subscribe": {
+    "/api/chat/subscribe": {
       "get": {
         "operationId": "ChatService_Subscribe",
         "responses": {

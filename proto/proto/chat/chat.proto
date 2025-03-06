@@ -17,12 +17,12 @@ message Message {
 service ChatService {
     rpc BroadcastMessage(Message) returns (google.protobuf.Empty){
         option (google.api.http) = {
-            post : "/v1/chat/broadcast"
+            post : "/api/chat/broadcast"
         };
     }
     rpc Subscribe(google.protobuf.Empty) returns (stream Message) {
         option (google.api.http) = {
-            get : "/v1/chat/subscribe"
+            get : "/api/chat/subscribe"
         };        
     }
 }
