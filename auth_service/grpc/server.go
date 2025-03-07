@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"fmt"
+	"log"
 	"os"
 	"time"
 
@@ -33,8 +35,10 @@ func NewAuthServer(userClient userpb.UserServiceClient, chatClient chatpb.ChatSe
 }
 
 func (s *AuthServer) Register(ctx context.Context, req *authpb.RegisterRequest) (*authpb.RegisterResponse, error) {
+	LogPrintln("using register rpc")
 	err := s.validator.Struct(req)
 	if err != nil {
+		LogPrintln("Error validation struct", err.Error())
 		return nil, err
 	}
 
@@ -45,6 +49,7 @@ func (s *AuthServer) Register(ctx context.Context, req *authpb.RegisterRequest) 
 	})
 
 	if err != nil {
+		LogPrintln("Error Insert to User service", err.Error())
 		return nil, err
 	}
 
@@ -55,8 +60,10 @@ func (s *AuthServer) Register(ctx context.Context, req *authpb.RegisterRequest) 
 }
 
 func (s *AuthServer) Login(ctx context.Context, req *authpb.LoginRequest) (*authpb.LoginResponse, error) {
+	LogPrintln("using login rpc")
 	err := s.validator.Struct(req)
 	if err != nil {
+		LogPrintln("Error validation struct", err.Error())
 		return nil, err
 	}
 
@@ -65,6 +72,7 @@ func (s *AuthServer) Login(ctx context.Context, req *authpb.LoginRequest) (*auth
 	})
 
 	if err != nil {
+		LogPrintln("Error find user by email to User service", err.Error())
 		return nil, err
 	}
 
@@ -75,6 +83,7 @@ func (s *AuthServer) Login(ctx context.Context, req *authpb.LoginRequest) (*auth
 	})
 
 	if err != nil {
+		LogPrintln("Error create access token", err.Error())
 		return nil, err
 	}
 
@@ -85,6 +94,7 @@ func (s *AuthServer) Login(ctx context.Context, req *authpb.LoginRequest) (*auth
 	})
 
 	if err != nil {
+		LogPrintln("Error create refresh token", err.Error())
 		return nil, err
 	}
 
@@ -97,6 +107,7 @@ func (s *AuthServer) Login(ctx context.Context, req *authpb.LoginRequest) (*auth
 
 	err = grpc.SetHeader(ctx, md)
 	if err != nil {
+		LogPrintln("Error setheader grpc", err.Error())
 		return nil, err
 	}
 
@@ -107,13 +118,16 @@ func (s *AuthServer) Login(ctx context.Context, req *authpb.LoginRequest) (*auth
 }
 
 func (s *AuthServer) Verify(ctx context.Context, _ *emptypb.Empty) (*authpb.VerifyResponse, error) {
+	LogPrintln("using verify rpc")
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
+		LogPrintln("Error get metadata with fromIncomingContext")
 		return nil, status.Error(codes.PermissionDenied, codes.PermissionDenied.String())
 	}
-
+	fmt.Println(md)
 	accTokens := md.Get("access-token")
 	if len(accTokens) == 0 {
+		LogPrintln("access-token are missing")
 		return nil, status.Error(codes.PermissionDenied, codes.PermissionDenied.String())
 	}
 
@@ -126,6 +140,7 @@ func (s *AuthServer) Verify(ctx context.Context, _ *emptypb.Empty) (*authpb.Veri
 	})
 
 	if err != nil {
+		log.Println("Error parse jwt", err.Error())
 		return nil, err
 	}
 
@@ -141,14 +156,17 @@ func (s *AuthServer) Verify(ctx context.Context, _ *emptypb.Empty) (*authpb.Veri
 }
 
 func (s *AuthServer) Refresh(ctx context.Context, _ *emptypb.Empty) (*authpb.RefreshResponse, error) {
+	LogPrintln("using refresh rpc")
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
+		LogPrintln("Error get metadata with fromIncomingContext")
 		return nil, status.Error(codes.PermissionDenied, codes.PermissionDenied.String())
 	}
 
 	refTokens := md.Get("refresh-token")
 
 	if len(refTokens) == 0 {
+		LogPrintln("access-token are missing")
 		return nil, status.Error(codes.PermissionDenied, codes.PermissionDenied.String())
 	}
 
@@ -161,11 +179,13 @@ func (s *AuthServer) Refresh(ctx context.Context, _ *emptypb.Empty) (*authpb.Ref
 	})
 
 	if err != nil {
+		log.Println("Error parse jwt", err.Error())
 		return nil, err
 	}
 
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok {
+		LogPrintln("Error assertion claims jwt")
 		return nil, status.Error(codes.PermissionDenied, "error assertion to jwt.mapclaims")
 	}
 
@@ -176,6 +196,7 @@ func (s *AuthServer) Refresh(ctx context.Context, _ *emptypb.Empty) (*authpb.Ref
 	})
 
 	if err != nil {
+		LogPrintln("Error create new access token jwt", err.Error())
 		return nil, err
 	}
 

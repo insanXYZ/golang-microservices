@@ -2,8 +2,7 @@ package main
 
 import (
 	"context"
-	"fmt"
-	"log"
+	"errors"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -12,15 +11,16 @@ import (
 )
 
 func (c *ChatService) StreamVerifyJwtInterceptor(srv any, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
+	LogPrintln("using StreamVerifyJwtInterceptor")
 	md, err := c.verifyJwt(ss.Context())
 	if err != nil {
-		log.Println(LOG_PREFIX, "Error verify jwt on StreamVerifyJwtInterceptor :", err.Error())
+		LogPrintln("Error verify jwt on StreamVerifyJwtInterceptor :", err.Error())
 		return err
 	}
 
 	err = ss.SetHeader(md)
 	if err != nil {
-		log.Println(LOG_PREFIX, "Error setheader metadata on StreamVerifyJwtInterceptor")
+		LogPrintln("Error setheader metadata on StreamVerifyJwtInterceptor", err.Error())
 		return status.Error(codes.PermissionDenied, codes.PermissionDenied.String())
 	}
 
@@ -29,15 +29,16 @@ func (c *ChatService) StreamVerifyJwtInterceptor(srv any, ss grpc.ServerStream, 
 }
 
 func (c *ChatService) UnaryVerifyJwtInterceptor(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp any, err error) {
+	LogPrintln("using UnaryVerifyJwtInterceptor")
 	md, err := c.verifyJwt(ctx)
 	if err != nil {
-		log.Println(LOG_PREFIX, "Error verify jwt on UnaryVerifyJwtInterceptor :", err.Error())
-		return nil, err
+		LogPrintln("Error verify jwt on UnaryVerifyJwtInterceptor :", err.Error())
+		return nil, status.Error(codes.PermissionDenied, codes.PermissionDenied.String())
 	}
 
 	err = grpc.SetHeader(ctx, md)
 	if err != nil {
-		log.Println(LOG_PREFIX, "Error setheader metadata on UnaryVerifyJwtInterceptor")
+		LogPrintln("Error setheader metadata on UnaryVerifyJwtInterceptor", err.Error())
 		return nil, status.Error(codes.PermissionDenied, codes.PermissionDenied.String())
 	}
 
@@ -47,17 +48,20 @@ func (c *ChatService) UnaryVerifyJwtInterceptor(ctx context.Context, req any, in
 // called this function for verify jwt to auth service fw
 // and get jwt claims (user.User model) for next handler
 func (c *ChatService) verifyJwt(ctx context.Context) (metadata.MD, error) {
-	fmt.Println(LOG_PREFIX, "verifyJwt")
+	LogPrintln("verifyJwt")
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		LogPrintln("Error getting metadata on context")
+		return nil, errors.New("Error getting metadata on context")
+	}
+	ctx = metadata.NewOutgoingContext(ctx, md)
 	resp, err := c.authClient.Verify(ctx, nil)
 	if err != nil {
-		return nil, status.Error(codes.PermissionDenied, err.Error())
+		LogPrintln("Error verify auth", err.Error())
+		return nil, err
 	}
 
 	user := resp.User
-	md, ok := metadata.FromIncomingContext(ctx)
-	if !ok {
-		return nil, status.Error(codes.PermissionDenied, codes.PermissionDenied.String())
-	}
 	md.Append("username", user.GetUsername())
 	md.Append("email", user.GetEmail())
 	md.Append("id", user.GetId())

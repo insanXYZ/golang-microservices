@@ -29,7 +29,6 @@ func main() {
 	}
 
 	initServer := NewAuthServer(userClient, chatClient, validator.New())
-
 	authsv.RegisterAuthServiceServer(grpcServer, initServer)
 
 	listen, err := net.Listen("tcp", APP_PORT)
