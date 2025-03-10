@@ -10,6 +10,15 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+type wrappedStream struct {
+	grpc.ServerStream
+	ctx context.Context
+}
+
+func (s *wrappedStream) Context() context.Context {
+	return s.ctx
+}
+
 func (c *ChatService) StreamVerifyJwtInterceptor(srv any, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
 	LogPrintln("using StreamVerifyJwtInterceptor")
 	md, err := c.verifyJwt(ss.Context())
@@ -18,13 +27,12 @@ func (c *ChatService) StreamVerifyJwtInterceptor(srv any, ss grpc.ServerStream, 
 		return err
 	}
 
-	err = ss.SetHeader(md)
-	if err != nil {
-		LogPrintln("Error setheader metadata on StreamVerifyJwtInterceptor", err.Error())
-		return status.Error(codes.PermissionDenied, codes.PermissionDenied.String())
-	}
+	ctx := metadata.NewIncomingContext(ss.Context(), md)
 
-	return handler(srv, ss)
+	return handler(srv, &wrappedStream{
+		ctx:          ctx,
+		ServerStream: ss,
+	})
 
 }
 
@@ -36,11 +44,7 @@ func (c *ChatService) UnaryVerifyJwtInterceptor(ctx context.Context, req any, in
 		return nil, status.Error(codes.PermissionDenied, codes.PermissionDenied.String())
 	}
 
-	err = grpc.SetHeader(ctx, md)
-	if err != nil {
-		LogPrintln("Error setheader metadata on UnaryVerifyJwtInterceptor", err.Error())
-		return nil, status.Error(codes.PermissionDenied, codes.PermissionDenied.String())
-	}
+	ctx = metadata.NewIncomingContext(ctx, md)
 
 	return handler(ctx, req)
 }
@@ -62,8 +66,13 @@ func (c *ChatService) verifyJwt(ctx context.Context) (metadata.MD, error) {
 	}
 
 	user := resp.User
-	md.Append("username", user.GetUsername())
-	md.Append("email", user.GetEmail())
+
+	md, ok = metadata.FromOutgoingContext(ctx)
+	if !ok {
+		LogPrintln("Error from outgoingcontext on context")
+		return nil, errors.New("Error getting metadata on context")
+	}
+	md.Append("name", user.GetName())
 	md.Append("id", user.GetId())
 
 	return md, nil

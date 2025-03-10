@@ -48,7 +48,7 @@ func (u *UserServer) Insert(ctx context.Context, req *userpb.InsertRequest) (*us
 		return nil, err
 	}
 
-	_, err = tx.Exec(ctx, "insert into users(id, username, email, password) values($1,$2,$3,$4)", uuid.NewString(), req.Username, req.Email, string(passByte))
+	_, err = tx.Exec(ctx, "insert into users(id, name, email, password) values($1,$2,$3,$4)", uuid.NewString(), req.Name, req.Email, string(passByte))
 	if err != nil {
 		LogPrintln("Error exec command", err.Error())
 		return nil, err
@@ -76,7 +76,7 @@ func (u *UserServer) FindUserByEmail(ctx context.Context, req *userpb.FindUserBy
 
 	var user userpb.User
 
-	err = u.db.QueryRow(ctx, "select id, username, email from users where email = $1", req.Email).Scan(&user.Id, &user.Username, &user.Email)
+	err = u.db.QueryRow(ctx, "select id, name, email from users where email = $1", req.Email).Scan(&user.Id, &user.Name, &user.Email)
 
 	if err != nil {
 		LogPrintln("Error exec query", err.Error())

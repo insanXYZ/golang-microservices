@@ -9,7 +9,7 @@ import (
 var queryMigrate = `
 	create table if not exists users (
 		id varchar(100) primary key,
-		username varchar(50) not null,
+		name varchar(50) not null,
 		email varchar(50) not null,
 		password varchar(255) not null,
 		created_at timestamp not null default current_timestamp

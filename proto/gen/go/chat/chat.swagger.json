@@ -21,10 +21,18 @@
         "operationId": "ChatService_BroadcastMessage",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "A successful response.(streaming responses)",
             "schema": {
               "type": "object",
-              "properties": {}
+              "properties": {
+                "result": {
+                  "$ref": "#/definitions/chatMessage"
+                },
+                "error": {
+                  "$ref": "#/definitions/rpcStatus"
+                }
+              },
+              "title": "Stream result of chatMessage"
             }
           },
           "default": {
@@ -42,7 +50,7 @@
             "type": "string"
           },
           {
-            "name": "User.username",
+            "name": "User.name",
             "in": "query",
             "required": false,
             "type": "string"
@@ -66,37 +74,6 @@
             "type": "string"
           }
         ],
-        "tags": [
-          "ChatService"
-        ]
-      }
-    },
-    "/api/chat/subscribe": {
-      "get": {
-        "operationId": "ChatService_Subscribe",
-        "responses": {
-          "200": {
-            "description": "A successful response.(streaming responses)",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "result": {
-                  "$ref": "#/definitions/chatMessage"
-                },
-                "error": {
-                  "$ref": "#/definitions/rpcStatus"
-                }
-              },
-              "title": "Stream result of chatMessage"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
         "tags": [
           "ChatService"
         ]
@@ -152,7 +129,7 @@
         "id": {
           "type": "string"
         },
-        "username": {
+        "name": {
           "type": "string"
         },
         "email": {

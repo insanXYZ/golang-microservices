@@ -22,7 +22,7 @@ message RefreshResponse {
 }
 
 message RegisterRequest {
-  string username =  1;     // @gotags: validate:"required,gt=4"
+  string name =  1;     // @gotags: validate:"required,gt=4"
   string password = 2;    // @gotags: validate:"required,gt=8"
   string email = 3;    // @gotags: validate:"required,email"
 }

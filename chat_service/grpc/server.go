@@ -1,77 +1,60 @@
 package main
 
 import (
-	"context"
-	"sync"
+	"log"
 
 	authpb "github.com/insanXYZ/proto/gen/go/auth"
 	chatpb "github.com/insanXYZ/proto/gen/go/chat"
-	userpb "github.com/insanXYZ/proto/gen/go/user"
+	"github.com/insanXYZ/proto/gen/go/user"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 type ChatService struct {
-	Hub        Hub
+	Hub        *Hub
 	authClient authpb.AuthServiceClient
 	chatpb.UnimplementedChatServiceServer
 }
 
 func NewChatServer(authClient authpb.AuthServiceClient) *ChatService {
+	hub := NewHub()
+	go hub.Run()
+
 	return &ChatService{
-		Hub:        NewHub(),
+		Hub:        hub,
 		authClient: authClient,
 	}
 }
 
-func (c *ChatService) BroadcastMessage(ctx context.Context, msg *chatpb.Message) (*emptypb.Empty, error) {
-	LogPrintln("using broadcast Message")
-	wg := sync.WaitGroup{}
-
-	for _, v := range c.Hub {
-		wg.Add(1)
-		go func(client *Client, msg *chatpb.Message) {
-			defer wg.Done()
-			LogPrintln("sending message from", msg.User.Username, "Message:", msg.Message)
-			err := client.stream.Send(msg)
-			if err != nil {
-				LogPrintln("Error send message", err.Error())
-				delete(c.Hub, v.user.Id)
-				client.err <- err
-			}
-		}(v, msg)
-	}
-
-	wg.Wait()
-
-	return nil, nil
-}
-
-func (c *ChatService) Subscribe(_ *emptypb.Empty, stream grpc.ServerStreamingServer[chatpb.Message]) error {
-	LogPrintln("using subscribe rpc")
+func (c *ChatService) BroadcastMessage(stream grpc.BidiStreamingServer[chatpb.Message, chatpb.Message]) error {
+	log.Println("Using broadcastmessage rpc")
 	ctx := stream.Context()
 	md, ok := metadata.FromIncomingContext(ctx)
-
 	if !ok {
-		LogPrintln("Error get metadata from context")
+		log.Println("Error missing getting header from incoming context")
 		return status.Error(codes.PermissionDenied, codes.PermissionDenied.String())
 	}
 
-	client := &Client{
-		stream: stream,
-		user: &userpb.User{
-			Id:       md.Get("id")[0],
-			Username: md.Get("username")[0],
-			Email:    md.Get("email")[0],
-		},
-		err: make(chan error),
+	var client *Client
+
+	if !c.Hub.ExistClient(md.Get("id")[0]) {
+		client = &Client{
+			stream: stream,
+			user: &user.User{
+				Id:   md.Get("id")[0],
+				Name: md.Get("name")[0],
+			},
+			Hub: c.Hub,
+			err: make(chan error),
+		}
+
+		client.Hub.Register <- client
+	} else {
+		client = c.Hub.Clients[md.Get("id")[0]]
 	}
 
-	c.Hub.Append(md.Get("id")[0], client)
-
+	go client.ReadPump()
 	return <-client.err
-
 }

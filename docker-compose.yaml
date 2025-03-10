@@ -3,6 +3,8 @@ services:
   # USER SERVICE
   user_grpc:
     container_name: user_grpc
+    ports:
+      - "8083:8083"
     environment:
       - APP_PORT=:8083
       - DIAL_AUTH_ENDPOINT=auth_grpc:8081 
@@ -26,6 +28,8 @@ services:
   # AUTH SERVICE
   auth_grpc:
     container_name: auth_grpc
+    ports:
+      - "8081:8081"
     environment:
       - APP_PORT=:8081
       - DIAL_USER_ENDPOINT=user_grpc:8083
@@ -50,6 +54,8 @@ services:
   # CHAT SERVICE
   chat_grpc:
     container_name: chat_grpc
+    ports:
+      - "8085:8085"
     environment:
       - DIAL_AUTH_ENDPOINT=auth_grpc:8081
       - APP_PORT=:8085
@@ -74,16 +80,18 @@ services:
   proxy_server:
     container_name: proxy_server
     image: nginx:latest
-    ports:
-      - "8000:80"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - "8000:80"
     depends_on:
       - user_gateway
       - user_grpc
       - auth_gateway
       - auth_grpc
       - db_user
+      - chat_grpc
+      - chat_gateway
 
   # DATABASE
   db_user:

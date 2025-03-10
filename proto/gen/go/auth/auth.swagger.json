@@ -161,7 +161,7 @@
     "authRegisterRequest": {
       "type": "object",
       "properties": {
-        "username": {
+        "name": {
           "type": "string",
           "title": "@gotags: validate:\"required,gt=4\""
         },
@@ -225,7 +225,7 @@
         "id": {
           "type": "string"
         },
-        "username": {
+        "name": {
           "type": "string"
         },
         "email": {

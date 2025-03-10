@@ -43,7 +43,7 @@ func (s *AuthServer) Register(ctx context.Context, req *authpb.RegisterRequest) 
 	}
 
 	res, err := s.userClient.Insert(ctx, &userpb.InsertRequest{
-		Username: req.Username,
+		Name:     req.Name,
 		Password: req.Password,
 		Email:    req.Email,
 	})
@@ -78,7 +78,7 @@ func (s *AuthServer) Login(ctx context.Context, req *authpb.LoginRequest) (*auth
 
 	signedAccToken, err := s.createJwtToken(jwt.MapClaims{
 		"id":   res.User.Id,
-		"name": res.User.Username,
+		"name": res.User.Name,
 		"exp":  time.Now().Add(10 * time.Minute).Unix(),
 	})
 
@@ -89,7 +89,7 @@ func (s *AuthServer) Login(ctx context.Context, req *authpb.LoginRequest) (*auth
 
 	signedRefToken, err := s.createJwtToken(jwt.MapClaims{
 		"id":   res.User.Id,
-		"name": res.User.Username,
+		"name": res.User.Name,
 		"exp":  time.Now().Add(24 * time.Minute).Unix(),
 	})
 
@@ -145,12 +145,10 @@ func (s *AuthServer) Verify(ctx context.Context, _ *emptypb.Empty) (*authpb.Veri
 	}
 
 	claims := token.Claims.(jwt.MapClaims)
-
 	return &authpb.VerifyResponse{
 		User: &userpb.User{
-			Id:       claims["id"].(string),
-			Username: claims["username"].(string),
-			Email:    claims["email"].(string),
+			Id:   claims["id"].(string),
+			Name: claims["name"].(string),
 		},
 	}, nil
 }

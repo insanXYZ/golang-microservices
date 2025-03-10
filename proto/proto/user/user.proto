@@ -6,7 +6,7 @@ option go_package = "./user";
 
 message User {
   string id = 1 ;
-  string username = 2 ;
+  string name = 2 ;
   string email = 3 ;
 }
 
@@ -19,7 +19,7 @@ message FindUserByEmailResponse {
 }
 
 message InsertRequest {
-  string username =  1; // @gotags: validate:"required,gt=4" 
+  string name =  1; // @gotags: validate:"required,gt=4" 
   string password = 2; // @gotags: validate:"required,gt=8" 
   string email = 3; // @gotags: validate:"required,email" 
 }
