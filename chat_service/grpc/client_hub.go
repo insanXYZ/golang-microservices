@@ -4,6 +4,7 @@ import (
 	"errors"
 	"io"
 	"log"
+	"time"
 
 	chatpb "github.com/insanXYZ/proto/gen/go/chat"
 	userpb "github.com/insanXYZ/proto/gen/go/user"
@@ -11,7 +12,7 @@ import (
 )
 
 type Client struct {
-	stream grpc.BidiStreamingServer[chatpb.Message, chatpb.Message]
+	stream grpc.BidiStreamingServer[chatpb.MessageRequest, chatpb.MessageResponse]
 	Hub    *Hub
 	user   *userpb.User
 	err    chan error
@@ -36,7 +37,13 @@ func (c *Client) ReadPump() {
 				return
 			}
 
-			c.Hub.Broadcast <- msg
+			msgResponse := chatpb.MessageResponse{
+				Message:   msg.Message,
+				Timestamp: time.Now().Format(time.DateTime),
+				User:      c.user,
+			}
+
+			c.Hub.Broadcast <- &msgResponse
 		}
 	}
 }

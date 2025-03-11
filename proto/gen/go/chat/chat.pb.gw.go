@@ -46,7 +46,7 @@ func request_ChatService_BroadcastMessage_0(ctx context.Context, marshaler runti
 	}
 	dec := marshaler.NewDecoder(req.Body)
 	handleSend := func() error {
-		var protoReq Message
+		var protoReq MessageRequest
 		err := dec.Decode(&protoReq)
 		if errors.Is(err, io.EOF) {
 			return err

@@ -8,14 +8,19 @@ import "google/protobuf/empty.proto";
 
 option go_package = "./chat";
 
-message Message {
+message MessageRequest {
+  string message = 1;
+  string timestamp = 2 ;
+}
+
+message MessageResponse {
     user.User User = 1 ;
     string message = 2 ; 
     string timestamp = 3;
 }
 
 service ChatService {
-    rpc BroadcastMessage(stream Message) returns (stream Message){
+    rpc BroadcastMessage(stream MessageRequest) returns (stream MessageResponse){
         option (google.api.http) = {
             post : "/api/chat/broadcast"
         };

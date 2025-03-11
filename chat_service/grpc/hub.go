@@ -11,7 +11,7 @@ type id = string
 
 type Hub struct {
 	Clients   map[id](*Client)
-	Broadcast chan *chat.Message
+	Broadcast chan *chat.MessageResponse
 	Register  chan *Client
 	mtx       sync.Mutex
 }
@@ -19,7 +19,7 @@ type Hub struct {
 func NewHub() *Hub {
 	h := &Hub{
 		Clients:   make(map[id]*Client),
-		Broadcast: make(chan *chat.Message),
+		Broadcast: make(chan *chat.MessageResponse),
 		Register:  make(chan *Client),
 	}
 	go h.Run()

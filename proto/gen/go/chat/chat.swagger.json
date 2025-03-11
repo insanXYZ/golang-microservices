@@ -26,13 +26,13 @@
               "type": "object",
               "properties": {
                 "result": {
-                  "$ref": "#/definitions/chatMessage"
+                  "$ref": "#/definitions/chatMessageResponse"
                 },
                 "error": {
                   "$ref": "#/definitions/rpcStatus"
                 }
               },
-              "title": "Stream result of chatMessage"
+              "title": "Stream result of chatMessageResponse"
             }
           },
           "default": {
@@ -43,24 +43,6 @@
           }
         },
         "parameters": [
-          {
-            "name": "User.id",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "User.name",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "User.email",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
           {
             "name": "message",
             "in": "query",
@@ -81,7 +63,7 @@
     }
   },
   "definitions": {
-    "chatMessage": {
+    "chatMessageResponse": {
       "type": "object",
       "properties": {
         "User": {

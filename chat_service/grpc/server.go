@@ -28,7 +28,7 @@ func NewChatServer(authClient authpb.AuthServiceClient) *ChatService {
 	}
 }
 
-func (c *ChatService) BroadcastMessage(stream grpc.BidiStreamingServer[chatpb.Message, chatpb.Message]) error {
+func (c *ChatService) BroadcastMessage(stream grpc.BidiStreamingServer[chatpb.MessageRequest, chatpb.MessageResponse]) error {
 	log.Println("Using broadcastmessage rpc")
 	ctx := stream.Context()
 	md, ok := metadata.FromIncomingContext(ctx)
